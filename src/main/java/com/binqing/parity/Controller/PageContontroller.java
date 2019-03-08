@@ -1,15 +1,9 @@
 package com.binqing.parity.Controller;
 
-import com.binqing.parity.Model.GoodsListModel;
-import com.binqing.parity.Model.GoodsListModel;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-
-import java.util.List;
 
 @Controller
 public class PageContontroller {
@@ -19,9 +13,13 @@ public class PageContontroller {
     }
 
     @RequestMapping("/search")
-    public ModelAndView search(@ModelAttribute("goodsList")List<GoodsListModel> goodsListModelList) {
+    public ModelAndView searchTest(@RequestParam(value = "name", required = false) String name,
+                                   @RequestParam(value = "page", required = false) String page,
+                                   @RequestParam(value = "sort", required = false) String sort) {
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.addObject("goodsList", goodsListModelList);
+        modelAndView.addObject("name",name);
+        modelAndView.addObject("page",page);
+        modelAndView.addObject("sort",sort);
         modelAndView.setViewName("search");
         return modelAndView;
     }

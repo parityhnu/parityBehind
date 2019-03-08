@@ -105,7 +105,7 @@
     </div>
     <div class="searchbox" align="center">
         <img class="image1" src="img/baidu.png" height="129" width="270"/>
-        <form action = "ip/searchandredict" onsubmit="return checkName()">
+        <form action = "/search" onsubmit="return checkName()">
             <input type="text" class="shuru" id = "name" name = "name"/>
             <input type="submit" class="ok" value="百度一下"  style="cursor: pointer"  >
         </form>

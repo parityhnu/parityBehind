@@ -1,7 +1,12 @@
+<%@ page import="com.binqing.parity.Model.GoodsModel" %>
+<%@ page import="java.util.Collections" %>
 <%@ page import="com.binqing.parity.Model.GoodsListModel" %>
-<%@ page import="java.util.List" %>
+<%@ page import="com.binqing.parity.Model.JDModel" %>
 <%@ page import="com.binqing.parity.Model.TBModel" %>
-<%--
+<%@ page import="com.binqing.parity.Service.HttpService" %>
+<%@ page import="java.util.List" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="java.util.Comparator" %><%--
   Created by IntelliJ IDEA.
   User: Lenovo
   Date: 2019/2/2
@@ -12,9 +17,9 @@
 <html>
 <head>
     <title>Title</title>
+    <link rel="stylesheet" href="css/style.css" type="text/css" />
 </head>
 <style type="text/css">
-
     body{
         height: 100%;
         width: 100%;
@@ -24,130 +29,146 @@
         padding: 0;
         margin: 0;
     }
-    .all .guide a{
-        font-family: "微软雅黑";
-        font-size: smaller ;
-        color: black;
-        font-weight:bold ;
-    }
 
-    .all .guide a:hover{
-        color: blue;
-    }
-
-    .all{
-        width: 100%;
-    }
-
-    .all .guide{
-        position: absolute;
-        top: 0;
-        right: 0;
-        width:450px;
-    }
-
-    .all .searchbox{
-        height:130px;
-        width: 950px;
-        margin: auto;
-        position: relative;
-        top: 0;
-        left: 0;
-        right: 0;
-    }
-
-    .all .guide .product{
-        background:cornflowerblue;
-        display: inline-block;
-        height: 20px;
-        width: 58px;
-
-    }
-
-    .all .guide .product a{
-        color: white;
+    a{
         text-decoration: none;
-
     }
 
-    .all .searchbox .image1{
-        position: absolute;
-        left: 0
+    a:link, a:visited {
+        color: #5a5a5a;
     }
 
-    .all .searchbox .shuru{
-        width: 339px;
-        height: 36px;
-        position: absolute;
-        left:300px;
-        top:60%;
+    a:hover, a:active{
+        color: #E62652;
     }
 
-    .all .searchbox .ok{
-        width: 100px;
-        height: 36px;
-        color: white;
-        background: #317ef3;
-        border: 0;
-        font-size:medium;
-        position: absolute;
-        left: 641px;
-        top:60%;
-        text-align:center
-    }
+    table  tr th{
 
-    .all .container{
-        background: #E0E0E0;
-        position: relative;
-        top: 10px;
-    }
+        font-weight:500;
 
-    .all .container .box
-    {
-        box-sizing:border-box;
-        -moz-box-sizing:border-box; /* Firefox */
-        width:25%;
-        border:1em solid #E0E0E0;
-        float:left;
-    }
+        font-size:14px
 
+    }
 </style>
 
 <body>
 <div class="all">
-    <div class="guide">
-        <a href="https://www.baidu.com">新闻</a>  
-        <a href="">hao123</a>  
-        <a href="">地图</a>  
-        <a href="">视频</a>  
-        <a href="">贴吧</a>  
-        <a href="">学术</a>  
-        <a href="">登录</a>  
-        <a href="">设置</a>  
-        <span class="product"><a href="">更多产品</a></span>
+    <div class="content_guide">
+        <div class="guide">
+            <a href="https://www.baidu.com">新闻</a>  
+            <a href="">hao123</a>  
+            <a href="">地图</a>  
+            <a href="">视频</a>  
+            <a href="">贴吧</a>  
+            <a href="">学术</a>  
+            <a href="">登录</a>  
+            <a href="">设置</a>  
+            <span class="product"><a href="">更多产品</a></span>
+        </div>
     </div>
-    <% List<GoodsListModel> goodsListModelList = (List<GoodsListModel>) request.getAttribute("goodsList");%>
-    <div class="searchbox">
-        <img class="image1" src="img/baidu.png" height="129" width="270"/>
-        <form action = "ip/searchandredict" onsubmit="return checkName()">
-            <input type="text" class="shuru" id = "name" name = "name"/>
-            <input type="submit" class="ok" value="百度一下"  style="cursor: pointer"  >
-        </form>
+
+    <%
+        String name = (String) request.getAttribute("name");
+        String index = (String) request.getAttribute("page");
+        String sort = (String) request.getAttribute("sort");
+        GoodsListModel goodsListModel = HttpService.getGoods(name, index, sort);
+        JDModel parityJD = goodsListModel.getParityJdModel();
+        TBModel parityTB = goodsListModel.getParityTbModel();
+        List<GoodsModel> goodsList = new ArrayList<>();
+        if (goodsListModel.getTbModelList() != null && !goodsListModel.getTbModelList().isEmpty()) {
+            goodsList.addAll(goodsListModel.getTbModelList());
+        }
+        if (goodsListModel.getJdModelList() != null && !goodsListModel.getJdModelList().isEmpty()) {
+            goodsList.addAll(goodsListModel.getJdModelList());
+        }
+        switch (sort){
+            case "1":
+                Collections.sort(goodsList, Comparator.comparingInt(GoodsModel::getSaleOrComment));
+                break;
+            case "2":
+                Collections.sort(goodsList, (o1, o2) -> {
+                    double d = Double.parseDouble(o1.getPrice()) - Double.parseDouble(o2.getPrice());
+                    return (int) (d * 100);
+                });
+                break;
+            case "3":
+                Collections.sort(goodsList, (o1, o2) -> {
+                    double d = Double.parseDouble(o2.getPrice()) - Double.parseDouble(o1.getPrice());
+                    return (int) (d * 100);
+                });
+                break;
+            default:
+                Collections.sort(goodsList, (o1, o2) -> (int) (o2.getScore() - o1.getScore()));
+                break;
+        }
+
+
+        String url_default = "http://localhost:9090/search?name="+name+"&page="+index+"&sort=0";
+        String url_sale_comment = "http://localhost:9090/search?name="+name+"&page="+index+"&sort=1";
+        String url_price_asc = "http://localhost:9090/search?name="+name+"&page="+index+"&sort=2";
+        String url_price_desc = "http://localhost:9090/search?name="+name+"&page="+index+"&sort=3";
+    %>
+    <div class="search_content">
+        <div class="searchbox">
+            <img class="image1" src="img/baidu.png" height="129" width="270"/>
+            <form action = "/search" onsubmit="return checkName()">
+                <input type="text" class="shuru" id = "name" name = "name"/>
+                <input type="submit" class="ok" value="百度一下"  style="cursor: pointer"  >
+            </form>
+        </div>
     </div>
 
     <div class="container">
-        <% for(GoodsListModel goodsListModel : goodsListModelList) {
+        <div class="item_content">
+            <div class="sort_tab">
+                <table width="300px" border="1px" cellspacing="0">
+                    <tr>
+                        <th bgcolor="<%="0".equals(sort)? "#5a5a5a" : "#ffffff"%>"><a style="color: <%="0".equals(sort)? "#ffffff" : "#5a5a5a"%>" href="<%=url_default%>" class="tab1">默认排序</a></th>
+                        <th bgcolor="<%="1".equals(sort)? "#5a5a5a" : "#ffffff"%>"><a style="color: <%="1".equals(sort)? "#ffffff" : "#5a5a5a"%>" href="<%=url_sale_comment%>" class="tab2" title="按销量从多到少排序">销量</a></th>
+                        <th bgcolor="<%="2".equals(sort)? "#5a5a5a" : "#ffffff"%>"><a style="color: <%="2".equals(sort)? "#ffffff" : "#5a5a5a"%>" href="<%=url_price_asc%>" class="tab3" title="按价格从低到高排序">价格(升序)</a>
+                        <th bgcolor="<%="3".equals(sort)? "#5a5a5a" : "#ffffff"%>"><a style="color: <%="3".equals(sort)? "#ffffff" : "#5a5a5a"%>" href="<%=url_price_desc%>" class="tab4" title="按价格从高到低排序">价格(降序)</a></th>
+                    </tr>
+                </table>
+
+            </div>
+            <%
+                for(GoodsModel goodsModel : goodsList) {
             %>
-                <div class="box">
-                    <a target="_blank" href="<%=goodsListModel.getHref()%>" >
-                        <img width="220" height="220" class="err-product" data-img="1"
-                             src="<%=goodsListModel.getImage()%>" />
-                        <a/>
-                    <p><%=goodsListModel.getName()%></p>
+            <div class="item_goods">
+                <div class="pic">
+                    <a  target="_blank" href="<%=goodsModel.getHref()%>" >
+                        <img  class="product" data-img="1"
+                             src="<%=goodsModel.getImage()%>" />
+                    </a>
+                </div>
+
+                <div class = "title">
+                    <a style="font-size: 18px"  target="_blank" href="<%=goodsModel.getHref()%>" >
+                        <%=goodsModel.getName()%>
+                    </a>
+                </div>
+
+                <div class= "price">
+                    <p style="color: #cc0000;font-size:22px;font-weight: bold"><%=goodsModel.getPrice()%></p>
+                </div>
+
+                <div class="sale_comment" >
+                    <p class="text_sale_comment" >有<a href="<%=goodsModel.getHref()%>" ><%=goodsModel.getSaleOrComment()%></a>人<%=goodsModel instanceof JDModel?"评论":"收货"%></p>
+                </div>
+
+                <div class="shop" >
+                    <p class="shop_title" ><%=goodsModel.getShop()%></p>
+                    <img class = "icon" src="<%=goodsModel instanceof JDModel?"img/jd.png":"img/tb.png"%>">
+                    <p class="shop_origin" ><%=goodsModel instanceof JDModel?"京东商城":"淘宝商城"%></p>
 
                 </div>
+
+            </div>
+
+            <div style="height:1px;width:auto;border-top:1px solid #ccc;"></div>
             <%
-        }%>
+                }%>
+        </div>
     </div>
 
     </div>

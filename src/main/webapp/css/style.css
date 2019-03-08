@@ -1,0 +1,192 @@
+.all .guide a{
+    font-family: "微软雅黑";
+    font-size: smaller ;
+    color: black;
+    font-weight:bold ;
+}
+
+.all .guide a:hover{
+    color: blue;
+}
+
+.all{
+    width: 100%;
+}
+
+.all .content_guide{
+    height: 25px;
+    -webkit-box-shadow: #E0E0E0 0px 0px 1px;
+    -moz-box-shadow: #E0E0E0 0px 0px 1px;
+    box-shadow: #E0E0E0 0px 0px 1px;
+}
+
+.all .content_guide .guide{
+    position: absolute;
+    top: 0;
+    right: 0;
+    width:450px;
+}
+
+.all .content_guide .guide .product{
+    background:cornflowerblue;
+    display: inline-block;
+    height: 20px;
+    width: 58px;
+}
+
+.all .content_guide .guide .product a{
+    color: white;
+    text-decoration: none;
+
+}
+
+.all .search_content{
+    -webkit-box-shadow: #E0E0E0 0px 0px 1px;
+    -moz-box-shadow: #E0E0E0 0px 0px 1px;
+    box-shadow: #E0E0E0 0px 0px 1px;
+    height: 150px;
+    position: relative;
+    top:2px;
+}
+
+.all .search_content .searchbox{
+    height:130px;
+    width: 850px;
+    position: relative;
+    margin: auto;
+    top: 0;
+    left: 0;
+    right: 0;
+}
+
+.all .search_content .searchbox .image1{
+    position: absolute;
+    left: 0
+}
+
+.all .search_content .searchbox .shuru{
+    width: 439px;
+    height: 36px;
+    position: absolute;
+    left:300px;
+    top:60%;
+}
+
+.all .search_content .searchbox .ok{
+    width: 100px;
+    height: 36px;
+    color: white;
+    background: #317ef3;
+    border: 0;
+    font-size:medium;
+    position: absolute;
+    left: 741px;
+    top:60%;
+    text-align:center
+}
+
+.all .container{
+    background: #EFEFEF;
+    position: relative;
+    top:  2px;
+}
+
+.all .container .item_content {
+    background: #FFFFFF;
+    width: 1100px;
+    position: relative;
+    margin: auto;
+    top: 40px;
+    left: 0;
+    right: 0;
+}
+
+.all .container .item_content .sort_tab {
+    padding-top: 8px;
+    padding-left: 8px;
+}
+
+.all .container .item_content .item_goods
+{
+    position: relative;
+    margin-top: 10px;
+    height: 180px;
+    overflow:hidden;
+}
+
+.all .container .item_content .item_goods .pic
+{
+    height: 160px;
+    width: 160px;
+    float:left;
+}
+
+.all .container .item_content .item_goods .pic .product
+{
+    height: 160px;
+    width: 160px;
+}
+
+.all .container .item_content .item_goods .title
+{
+    margin-top: 22px;
+    margin-left: 8px;
+    width: 420px;
+    float:left;
+}
+
+.all .container .item_content .item_goods .price
+{
+    margin-top: 18px;
+    width: 100px;
+    float:left;
+}
+
+.all .container .item_content .item_goods .sale_comment
+{
+    margin-top: 24px;
+    margin-left: 50px;
+    width: 150px;
+    float:left;
+}
+
+.all .container .item_content .item_goods .sale_comment .text_sale_comment
+{
+    color: #5a5a5a;
+    font-size: 14px;
+}
+
+.all .container .item_content .item_goods .sale_comment .text_sale_comment a
+{
+    color: #005aa0;
+}
+
+.all .container .item_content .item_goods .shop
+{
+    margin-top: 18px;
+    width: 180px;
+    float:right;
+}
+
+.all .container .item_content .item_goods .shop .icon
+{
+    width: 18px;
+    height: 18px;
+    margin-left: 4px;
+    margin-top: 6px;
+    float:left;
+}
+
+.all .container .item_content .item_goods .shop .shop_title
+{
+    color: #5a5a5a;
+    font-size: 14px;
+}
+
+.all .container .item_content .item_goods .shop .shop_origin
+{
+    margin-top: 4px;
+    float: left;
+    font-size: 14px;
+    color: #5a5a5a;
+}
