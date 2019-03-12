@@ -3,7 +3,10 @@ package com.binqing.parity.Controller;
 import com.binqing.parity.Consts.TimeConsts;
 import com.binqing.parity.EditDistance;
 import com.binqing.parity.Enum.SortType;
-import com.binqing.parity.Model.*;
+import com.binqing.parity.Model.GoodsListModel;
+import com.binqing.parity.Model.JDModel;
+import com.binqing.parity.Model.SearchModel;
+import com.binqing.parity.Model.TBModel;
 import com.binqing.parity.Service.HttpService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -15,12 +18,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -71,10 +70,11 @@ public class IPController {
         //控制爬虫频率，仅当时间超过一定间隔之后
         //否则直接进mongoDB找
         GoodsListModel goodsListModel = new GoodsListModel();
-        if (time == null || (time != null && saveTime - Long.parseLong(time) > TimeConsts.MILLS_OF_ONE_HOUR)) {
+        if (time == null || (time != null && saveTime - Long.parseLong(time) > TimeConsts.MILLS_OF_ONE_DAY)) {
+//            ToUsePy.catchGoods(String.valueOf(page), name, sort);
             stringRedisTemplate.opsForValue().set(code, String.valueOf(saveTime));
             stringRedisTemplate.opsForList().leftPush(REDIS_URL, new StringBuilder(name).append("_").append(page).append("_").append(qsort).toString());
-            AtomicInteger integer = new AtomicInteger(5);
+            AtomicInteger integer = new AtomicInteger(10);
             while(integer.decrementAndGet() > 0) {
                 List<JDModel> jdModelList = goodsListModel.getJdModelList();
                 List<TBModel> tbModelList = goodsListModel.getTbModelList();
