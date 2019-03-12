@@ -1,9 +1,14 @@
 package com.binqing.parity.Model;
 
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document(collection = "goods")
 public class GoodsModel {
     private String name;
 
     private String price;
+
+    private int salecomment;
 
     private String href;
 
@@ -15,7 +20,11 @@ public class GoodsModel {
 
     private String shop;
 
+    private int sort;
+
     private double score;
+
+    private int type;
 
     public String getName() {
         return name;
@@ -31,6 +40,14 @@ public class GoodsModel {
 
     public void setPrice(String price) {
         this.price = price;
+    }
+
+    public int getSalecomment() {
+        return salecomment;
+    }
+
+    public void setSalecomment(int salecomment) {
+        this.salecomment = salecomment;
     }
 
     public String getHref() {
@@ -73,6 +90,14 @@ public class GoodsModel {
         this.shop = shop;
     }
 
+    public int getSort() {
+        return sort;
+    }
+
+    public void setSort(int sort) {
+        this.sort = sort;
+    }
+
     public double getScore() {
         return score;
     }
@@ -81,13 +106,11 @@ public class GoodsModel {
         this.score = score;
     }
 
-    public int getSaleOrComment() {
-        if (this instanceof TBModel) {
-            String sale = ((TBModel) this).getSale();
-            return Integer.parseInt(sale.substring(0, sale.length()-3));
-        } else if (this instanceof JDModel) {
-            return Integer.parseInt(((JDModel) this).getComment());
-        }
-        return 0;
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
     }
 }

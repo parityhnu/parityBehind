@@ -1,12 +1,10 @@
-<%@ page import="com.binqing.parity.Model.GoodsModel" %>
-<%@ page import="java.util.Collections" %>
 <%@ page import="com.binqing.parity.Model.GoodsListModel" %>
-<%@ page import="com.binqing.parity.Model.JDModel" %>
-<%@ page import="com.binqing.parity.Model.TBModel" %>
+<%@ page import="com.binqing.parity.Model.GoodsModel" %>
 <%@ page import="com.binqing.parity.Service.HttpService" %>
-<%@ page import="java.util.List" %>
 <%@ page import="java.util.ArrayList" %>
-<%@ page import="java.util.Comparator" %><%--
+<%@ page import="java.util.Collections" %>
+<%@ page import="java.util.Comparator" %>
+<%@ page import="java.util.List" %><%--
   Created by IntelliJ IDEA.
   User: Lenovo
   Date: 2019/2/2
@@ -78,21 +76,16 @@
             sort = "0";
         }
         GoodsListModel goodsListModel = HttpService.getGoods(name, index, sort);
-        JDModel parityJD = goodsListModel.getParityJdModel();
-        TBModel parityTB = goodsListModel.getParityTbModel();
         List<GoodsModel> goodsList = new ArrayList<>();
-        if (goodsListModel.getTbModelList() != null && !goodsListModel.getTbModelList().isEmpty()) {
-            goodsList.addAll(goodsListModel.getTbModelList());
-        }
-        if (goodsListModel.getJdModelList() != null && !goodsListModel.getJdModelList().isEmpty()) {
-            goodsList.addAll(goodsListModel.getJdModelList());
+        if (goodsListModel.getGoodsModelList() != null && !goodsListModel.getGoodsModelList().isEmpty()) {
+            goodsList.addAll(goodsListModel.getGoodsModelList());
         }
         switch (sort){
             case "1":
                 Collections.sort(goodsList, new Comparator<GoodsModel>() {
                     @Override
                     public int compare(GoodsModel o1, GoodsModel o2) {
-                        return o2.getSaleOrComment() - o1.getSaleOrComment();
+                        return o2.getSalecomment() - o1.getSalecomment();
                     }
                 });
                 break;
@@ -156,7 +149,7 @@
             <%
                 for(GoodsModel goodsModel : goodsList) {
                     boolean over = false;
-                    int sc = goodsModel.getSaleOrComment();
+                    int sc = goodsModel.getSalecomment();
                     double saleOrComment = sc;
                     if (sc >= 10000) {
                         saleOrComment/=10000;
@@ -188,13 +181,13 @@
 
                 <div class="sale_comment" >
                     <p class="text_sale_comment" >有
-                        <a href="<%=goodsModel.getHref()%>" ><%=saleComment%></a>人<%=goodsModel instanceof JDModel?"评论":"收货"%></p>
+                        <a href="<%=goodsModel.getHref()%>" ><%=saleComment%></a>人<%=goodsModel.getType() == 0?"评论":"收货"%></p>
                 </div>
 
                 <div class="shop" >
                     <p class="shop_title" ><%=goodsModel.getShop()%></p>
-                    <img class = "icon" src="<%=goodsModel instanceof JDModel?"img/jd.png":"img/tb.png"%>">
-                    <p class="shop_origin" ><%=goodsModel instanceof JDModel?"京东商城":"淘宝商城"%></p>
+                    <img class = "icon" src="<%=goodsModel.getType() == 0?"img/jd.png":"img/tb.png"%>">
+                    <p class="shop_origin" ><%=goodsModel.getType() == 0?"京东商城":"淘宝商城"%></p>
 
                 </div>
 
