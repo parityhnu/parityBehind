@@ -7,9 +7,11 @@ public class LoginModel {
 
     private String salt;
 
-    private String state;
+    private long state;
 
     private Integer wrongtimes;
+
+    private Integer uid;
 
     public String getAccount() {
         return account;
@@ -35,11 +37,11 @@ public class LoginModel {
         this.salt = salt;
     }
 
-    public String getState() {
+    public long getState() {
         return state;
     }
 
-    public void setState(String state) {
+    public void setState(long state) {
         this.state = state;
     }
 
@@ -49,5 +51,13 @@ public class LoginModel {
 
     public void setWrongtimes(Integer wrongtimes) {
         this.wrongtimes = wrongtimes;
+    }
+
+    public Integer getUid() {
+        return uid;
+    }
+
+    public void setUid(Integer uid) {
+        this.uid = uid;
     }
 }

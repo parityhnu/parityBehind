@@ -7,6 +7,8 @@ public class UserModel {
 
     private String uname;
 
+    private String phone;
+
     public int getUid() {
         return uid;
     }
@@ -29,5 +31,13 @@ public class UserModel {
 
     public void setUname(String uname) {
         this.uname = uname;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 }
