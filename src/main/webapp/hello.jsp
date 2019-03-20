@@ -37,12 +37,32 @@
         width: 100%;
     }
 
-    .all .guide{
+    .all .content_guide{
+        height: 25px;
+        -webkit-box-shadow: #E0E0E0 0px 0px 1px;
+        -moz-box-shadow: #E0E0E0 0px 0px 1px;
+        box-shadow: #E0E0E0 0px 0px 1px;
+    }
+
+    .all .content_guide .guide{
         position: absolute;
         top: 0;
-        right: 0;
-        width:450px;
+        right: 30px;
     }
+
+    .all .content_guide .guide .product{
+        background:cornflowerblue;
+        display: inline-block;
+        height: 20px;
+        width: 58px;
+    }
+
+    .all .content_guide .guide .product a{
+        color: white;
+        text-decoration: none;
+
+    }
+
 
     .all .searchbox{
         height:350px;
@@ -92,16 +112,14 @@
 
 <body>
 <div class="all">
-    <div class="guide">
-        <a href="https://www.baidu.com">新闻</a>  
-        <a href="">hao123</a>  
-        <a href="">地图</a>  
-        <a href="">视频</a>  
-        <a href="">贴吧</a>  
-        <a href="">学术</a>  
-        <a href="">登录</a>  
-        <a href="">设置</a>  
-        <span class="product"><a href="">更多产品</a></span>
+    <div class="content_guide">
+        <div class="guide">
+            <a href="<%=session.getAttribute("user") == null ? "/login" : ""%>"><%=session.getAttribute("user") == null ? "请登录" : "欢迎您," + session.getAttribute("user")%></a>  
+            <% if (session.getAttribute("user") != null) {%>
+            <a href="/signout">退出账户</a>
+            <% }%>
+            <a href="<%=session.getAttribute("user") == null ? "/login" : ""%>">我的收藏</a>
+        </div>
     </div>
     <div class="searchbox" align="center">
         <img class="image1" src="img/baidu.png" height="129" width="270"/>

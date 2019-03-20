@@ -8,11 +8,10 @@ import com.binqing.parity.PasswordHash;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
@@ -22,32 +21,33 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
+@RequestMapping("/user")
 public class UserController {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
-
-    @GetMapping("/testall")
-    public List<UserModel> testall() throws InvalidKeySpecException, NoSuchAlgorithmException {
-        List<UserModel> list = new ArrayList<>();
-        list.add(register("qing123","123456","13511476510"));
-        list.add(login("qing123","123456"));
-        return list;
-    }
-
-    @GetMapping("/testlogin")
-    public List<UserModel> testLogin() throws InvalidKeySpecException, NoSuchAlgorithmException {
-        List<UserModel> list = new ArrayList<>();
-        list.add(login("qing123","123123")); // 正确
-        list.add(login("qing123","123123123123123"));
-        list.add(login("qing123","123123123123123"));
-        list.add(login("qing123","123123123123123"));
-        list.add(login("qing123","123123123123123"));
-        list.add(login("qing123","123123123123123"));
-        list.add(login("qing123","123123123123123"));
-        list.add(login("qing123","123123123123123"));
-        return list;
-    }
+//
+//    @GetMapping("/testall")
+//    public List<UserModel> testall() throws InvalidKeySpecException, NoSuchAlgorithmException {
+//        List<UserModel> list = new ArrayList<>();
+//        list.add(register("qing123","123456","13511476510"));
+//        list.add(login("qing123","123456"));
+//        return list;
+//    }
+//
+//    @GetMapping("/testlogin")
+//    public List<UserModel> testLogin() throws InvalidKeySpecException, NoSuchAlgorithmException {
+//        List<UserModel> list = new ArrayList<>();
+//        list.add(login("qing123","123123")); // 正确
+//        list.add(login("qing123","123123123123123"));
+//        list.add(login("qing123","123123123123123"));
+//        list.add(login("qing123","123123123123123"));
+//        list.add(login("qing123","123123123123123"));
+//        list.add(login("qing123","123123123123123"));
+//        list.add(login("qing123","123123123123123"));
+//        list.add(login("qing123","123123123123123"));
+//        return list;
+//    }
 
     @GetMapping("/testmodify")
     public List<String> testmodify() throws InvalidKeySpecException, NoSuchAlgorithmException {
@@ -62,6 +62,11 @@ public class UserController {
 
     @PostMapping("/register")
     public UserModel register(@RequestParam String account, @RequestParam String password, @RequestParam String phone) throws InvalidKeySpecException, NoSuchAlgorithmException {
+        String sqlCheck = "select * from login where account =?" ;
+        LoginModel loginModel = validatePasswordBysql(sqlCheck, new String[]{account});
+        if (loginModel != null) {
+            return null;
+        }
         String sql2 = "insert into user(account, name, phone) values (?,?,?);";
         jdbcTemplate.update(sql2, account, "Parity" + account, phone);
         UserModel userModel = queryUserByAccount(account);
@@ -73,13 +78,14 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public UserModel login(@RequestParam String account, @RequestParam String password) throws InvalidKeySpecException, NoSuchAlgorithmException {
-        //todo 密码错误时check state，增加wrongtimes并更新state state显示状态 仅当为0时才会返回登陆成功 显示为时间戳时需要对wrongtimes进行计算，超过3次则不允许登陆
-        //todo 接上，密码错误和不允许登陆需要返回不同的错误码（可以附在uid上 -1 -2）
+    public UserModel login(HttpServletRequest request, @RequestParam String account, @RequestParam String password) throws InvalidKeySpecException, NoSuchAlgorithmException {
+        HttpSession session = request.getSession(true);
+        // 密码错误时check state，增加wrongtimes并更新state state显示状态 仅当为0时才会返回登陆成功 显示为时间戳时需要对wrongtimes进行计算，超过3次则不允许登陆
+        // 接上，密码错误和不允许登陆需要返回不同的错误码（可以附在uid上 -1 -2）
         String sql = "select * from login where account =?" ;
         UserModel result = new UserModel();
         try {
-            LoginModel loginModel = validatePasswordBysql(sql, new String[]{account}, password);
+            LoginModel loginModel = validatePasswordBysql(sql, new String[]{account});
             if (loginModel == null) {
                 result.setUid(LoginStatus.WRONG.getValue());
             } else {
@@ -93,6 +99,8 @@ public class UserController {
                             //清空次数
                             wrongtimes = 0;
                             result = queryUserByAccount(account);
+                            session.setAttribute("user", result.getUname());
+                            session.setAttribute("ac", account);
                         } else {
                             //设置次数为1，并且更新state
                             wrongtimes = 1;
@@ -108,6 +116,8 @@ public class UserController {
                         //清空次数
                         wrongtimes = 0;
                         result = queryUserByAccount(account);
+                        session.setAttribute("user", result.getUname());
+                        session.setAttribute("ac", account);
                     } else {
                         wrongtimes += 1;
                         result.setUid(LoginStatus.WRONG.getValue());
@@ -187,7 +197,7 @@ public class UserController {
                     return s2;
                 }
                 sql = "select * from login where uid =?" ;
-                LoginModel loginModel = validatePasswordBysql(sql, new String[]{user}, s1);
+                LoginModel loginModel = validatePasswordBysql(sql, new String[]{user});
                 if (loginModel != null && PasswordHash.validatePassword( s1 + loginModel.getSalt(), loginModel.getPassword())) {
                     String sql2 = "update login set password = ? , salt = ? where uid = ?";
                     String salt =createSalt();
@@ -226,7 +236,7 @@ public class UserController {
         });
     }
 
-    private LoginModel validatePasswordBysql(String sql, String [] columns, String password) {
+    private LoginModel validatePasswordBysql(String sql, String [] columns) {
         LoginModel loginModel;
         try {
             loginModel = jdbcTemplate.queryForObject(sql, columns, (resultSet, i) -> {

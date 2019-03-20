@@ -1,12 +1,13 @@
-<%@ page import="com.binqing.parity.Model.GoodsModel" %>
-<%@ page import="java.util.Collections" %>
 <%@ page import="com.binqing.parity.Model.GoodsListModel" %>
+<%@ page import="com.binqing.parity.Model.GoodsModel" %>
 <%@ page import="com.binqing.parity.Model.JDModel" %>
 <%@ page import="com.binqing.parity.Model.TBModel" %>
 <%@ page import="com.binqing.parity.Service.HttpService" %>
-<%@ page import="java.util.List" %>
 <%@ page import="java.util.ArrayList" %>
-<%@ page import="java.util.Comparator" %><%--
+<%@ page import="java.util.Collections" %>
+<%@ page import="java.util.Comparator" %>
+<%@ page import="java.util.List" %>
+<%--
   Created by IntelliJ IDEA.
   User: Lenovo
   Date: 2019/2/2
@@ -52,84 +53,81 @@
 </style>
 
 <body>
+
+<%
+    String name = (String) request.getAttribute("name");
+    String index = (String) request.getAttribute("page");
+    String sort = (String) request.getAttribute("sort");
+    if (index == null || "".equals(index)) {
+        index = "0";
+    }
+    if (sort == null || "".equals(sort)) {
+        sort = "0";
+    }
+    GoodsListModel goodsListModel = HttpService.getGoods(name, index, sort);
+    JDModel parityJD = goodsListModel.getParityJdModel();
+    TBModel parityTB = goodsListModel.getParityTbModel();
+    List<GoodsModel> goodsList = new ArrayList<>();
+    if (goodsListModel.getTbModelList() != null && !goodsListModel.getTbModelList().isEmpty()) {
+        goodsList.addAll(goodsListModel.getTbModelList());
+    }
+    if (goodsListModel.getJdModelList() != null && !goodsListModel.getJdModelList().isEmpty()) {
+        goodsList.addAll(goodsListModel.getJdModelList());
+    }
+    switch (sort){
+        case "1":
+            Collections.sort(goodsList, new Comparator<GoodsModel>() {
+                @Override
+                public int compare(GoodsModel o1, GoodsModel o2) {
+                    return o2.getSaleOrComment() - o1.getSaleOrComment();
+                }
+            });
+            break;
+        case "2":
+            Collections.sort(goodsList, new Comparator<GoodsModel>() {
+                @Override
+                public int compare(GoodsModel o1, GoodsModel o2) {
+                    double d = Double.parseDouble(o1.getPrice()) - Double.parseDouble(o2.getPrice());
+                    return (int) (d * 100);
+                }
+            });
+            break;
+        case "3":
+            Collections.sort(goodsList, new Comparator<GoodsModel>() {
+                @Override
+                public int compare(GoodsModel o1, GoodsModel o2) {
+                    double d = Double.parseDouble(o2.getPrice()) - Double.parseDouble(o1.getPrice());
+                    return (int) (d * 100);
+                }
+            });
+            break;
+        default:
+            Collections.sort(goodsList, new Comparator<GoodsModel>() {
+                @Override
+                public int compare(GoodsModel o1, GoodsModel o2) {
+                    return (int) (o2.getScore() - o1.getScore());
+                }
+            });
+            break;
+    }
+
+
+    String url_default = "/search?name="+name+"&page="+index+"&sort=0";
+    String url_sale_comment = "/search?name="+name+"&page="+index+"&sort=1";
+    String url_price_asc = "/search?name="+name+"&page="+index+"&sort=2";
+    String url_price_desc = "/search?name="+name+"&page="+index+"&sort=3";
+%>
 <div class="all">
     <div class="content_guide">
         <div class="guide">
-            <a href="https://www.baidu.com">新闻</a>  
-            <a href="">hao123</a>  
-            <a href="">地图</a>  
-            <a href="">视频</a>  
-            <a href="">贴吧</a>  
-            <a href="">学术</a>  
-            <a href="">登录</a>  
-            <a href="">设置</a>  
-            <span class="product"><a href="">更多产品</a></span>
+            <a href="<%=session.getAttribute("user") == null ? "/login?href=/search?name="+name+"&page="+index +"&sort="+sort : ""%>"><%=session.getAttribute("user") == null ? "请登录" : "欢迎您," + session.getAttribute("user")%></a>
+            <% if (session.getAttribute("user") != null) {%>
+                 <a href="<%="/signout?href=/search&name="+name+"&page="+index +"&sort="+sort%>">退出账户</a>
+            <% }%>
+            <a href="<%=session.getAttribute("user") == null ? "/login?href=/search?name="+name+"&page="+index +"&sort="+sort : ""%>">我的收藏</a>
         </div>
     </div>
 
-    <%
-        String name = (String) request.getAttribute("name");
-        String index = (String) request.getAttribute("page");
-        String sort = (String) request.getAttribute("sort");
-        if (index == null || "".equals(index)) {
-            index = "0";
-        }
-        if (sort == null || "".equals(sort)) {
-            sort = "0";
-        }
-        GoodsListModel goodsListModel = HttpService.getGoods(name, index, sort);
-        JDModel parityJD = goodsListModel.getParityJdModel();
-        TBModel parityTB = goodsListModel.getParityTbModel();
-        List<GoodsModel> goodsList = new ArrayList<>();
-        if (goodsListModel.getTbModelList() != null && !goodsListModel.getTbModelList().isEmpty()) {
-            goodsList.addAll(goodsListModel.getTbModelList());
-        }
-        if (goodsListModel.getJdModelList() != null && !goodsListModel.getJdModelList().isEmpty()) {
-            goodsList.addAll(goodsListModel.getJdModelList());
-        }
-        switch (sort){
-            case "1":
-                Collections.sort(goodsList, new Comparator<GoodsModel>() {
-                    @Override
-                    public int compare(GoodsModel o1, GoodsModel o2) {
-                        return o2.getSaleOrComment() - o1.getSaleOrComment();
-                    }
-                });
-                break;
-            case "2":
-                Collections.sort(goodsList, new Comparator<GoodsModel>() {
-                    @Override
-                    public int compare(GoodsModel o1, GoodsModel o2) {
-                        double d = Double.parseDouble(o1.getPrice()) - Double.parseDouble(o2.getPrice());
-                        return (int) (d * 100);
-                    }
-                });
-                break;
-            case "3":
-                Collections.sort(goodsList, new Comparator<GoodsModel>() {
-                    @Override
-                    public int compare(GoodsModel o1, GoodsModel o2) {
-                        double d = Double.parseDouble(o2.getPrice()) - Double.parseDouble(o1.getPrice());
-                        return (int) (d * 100);
-                    }
-                });
-                break;
-            default:
-                Collections.sort(goodsList, new Comparator<GoodsModel>() {
-                    @Override
-                    public int compare(GoodsModel o1, GoodsModel o2) {
-                        return (int) (o2.getScore() - o1.getScore());
-                    }
-                });
-                break;
-        }
-
-
-        String url_default = "/search?name="+name+"&page="+index+"&sort=0";
-        String url_sale_comment = "/search?name="+name+"&page="+index+"&sort=1";
-        String url_price_asc = "/search?name="+name+"&page="+index+"&sort=2";
-        String url_price_desc = "/search?name="+name+"&page="+index+"&sort=3";
-    %>
     <div class="search_content">
         <div class="searchbox">
             <img class="image1" src="img/baidu.png" height="129" width="270"/>
@@ -153,6 +151,40 @@
                 </table>
 
             </div>
+
+            <% if (parityJD != null || parityTB != null) {%>
+            <p class="tip_product_detail">快速查看产品详情</p>
+            <div class="parity_goods">
+                <div class="item_parity_goods">
+                    <div class="pic">
+                        <a  target="_blank" href="" >
+                            <p style="text-align: center">
+                                <img  class="product" data-img="1"
+                                      src="<%=parityJD == null ? parityTB.getImage() : parityJD.getImage()%>" />
+                            </p>
+
+                        </a>
+                    </div>
+
+                    <div class = "title">
+                        <a class="title" style="font-size: 14px"  target="_blank" href="" >
+                            <%=parityJD == null ? parityTB.getName().substring(0,30) + "..." : parityJD.getName().substring(0,30) + "..."%>
+                        </a>
+                    </div>
+
+                    <div class= "price">
+                        <p style="color: #cc0000;font-size:16px;font-weight: bold">￥<%=parityJD == null ? parityTB.getPrice() : parityJD.getPrice()%></p>
+                    </div>
+
+                    <p class="count" style="color : #7b7b7b;font-size:13px;"><%=parityJD != null && parityTB != null? "2" : "1"%>个商城比价</p>
+                </div>
+
+            </div>
+            <%}%>
+
+            <div style="margin-top:4px;height:1px;width:auto;border-top:1px solid #ccc;"></div>
+
+
             <%
                 for(GoodsModel goodsModel : goodsList) {
                     boolean over = false;
@@ -183,7 +215,7 @@
                 </div>
 
                 <div class= "price">
-                    <p style="color: #cc0000;font-size:22px;font-weight: bold"><%=goodsModel.getPrice()%></p>
+                    <p style="color: #cc0000;font-size:22px;font-weight: bold">￥<%=goodsModel.getPrice()%></p>
                 </div>
 
                 <div class="sale_comment" >

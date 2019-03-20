@@ -5,11 +5,56 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 @Controller
 public class PageContontroller {
     @RequestMapping("/hello")
     public String hello(){
         return "hello";
+    }
+
+
+    @RequestMapping("/login")
+    public ModelAndView login(@RequestParam(value = "href", required = false) String href) {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.addObject("href",href);
+        modelAndView.setViewName("login");
+        return modelAndView;
+    }
+
+    @RequestMapping("/signout")
+    public String signout(HttpServletRequest request, @RequestParam(value = "href", required = false) String href,
+                          @RequestParam(value = "name", required = false) String name,
+                          @RequestParam(value = "page", required = false) String page,
+                          @RequestParam(value = "sort", required = false) String sort) throws UnsupportedEncodingException {
+        HttpSession session = request.getSession();
+        session.setAttribute("user", null);
+        session.setAttribute("account", null);
+        String result = "";
+        if (href == null || "".equals(href)) {
+            result = "redirect:/hello";
+        }
+        if ("/search".equals(href)) {
+            StringBuilder builder = new StringBuilder("redirect:/search");
+            builder.append("?name=");
+            builder.append(URLEncoder.encode(name,"UTF-8"));
+            if (page == null || "".equals(page)) {
+                page = "0";
+            }
+            builder.append("&page=");
+            builder.append(page);
+            if (page == null || "".equals(page)) {
+                sort = "0";
+            }
+            builder.append("&sort=");
+            builder.append(sort);
+            result = builder.toString();
+        }
+        return result;
     }
 
     @RequestMapping("/search")

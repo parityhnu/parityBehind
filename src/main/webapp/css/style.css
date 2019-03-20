@@ -23,8 +23,7 @@
 .all .content_guide .guide{
     position: absolute;
     top: 0;
-    right: 0;
-    width:450px;
+    right: 30px;
 }
 
 .all .content_guide .guide .product{
@@ -217,4 +216,60 @@
     margin-top: 16px;
     margin-left: 16px;
     float: left;
+}
+
+.all .container .item_content .tip_product_detail {
+    padding-top: 16px;
+    padding-left: 8px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.all .container .item_content .parity_goods
+{
+    position: relative;
+    height: 220px;
+    width: 1000px;
+    padding-top: 16px;
+    padding-left: 8px;
+}
+
+.all .container .item_content .parity_goods .item_parity_goods
+{
+    height: 230px;
+    box-sizing: border-box;
+    width: 20%;
+    float: left;
+}
+
+.all .container .item_content .parity_goods .item_parity_goods .pic
+{
+    height: 120px;
+}
+
+.all .container .item_content .parity_goods .item_parity_goods .product
+{
+    text-align: center;
+    height: 120px;
+    width: 120px;
+}
+
+.all .container .item_content .parity_goods .item_parity_goods .title
+{
+    text-align: center;
+    word-wrap:break-word;
+    word-break:break-all;
+    overflow: hidden;
+}
+
+.all .container .item_content .parity_goods .item_parity_goods .price
+{
+    text-align: center;
+    margin-top: 4px;
+}
+
+.all .container .item_content .parity_goods .item_parity_goods .count
+{
+    text-align: center;
+    margin-top: 4px;
 }

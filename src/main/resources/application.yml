@@ -1,5 +1,8 @@
 server:
   port: 9090
+  servlet:
+    session:
+      timeout: 1440m
 spring:
   redis:
     database: 0

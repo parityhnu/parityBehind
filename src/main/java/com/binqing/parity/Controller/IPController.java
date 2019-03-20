@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
-@RestController()
+@RestController
 @RequestMapping("/ip")
 public class IPController {
 
@@ -46,6 +46,7 @@ public class IPController {
      */
     @GetMapping("/search")
     public GoodsListModel search(@RequestParam String name, @RequestParam int page, @RequestParam(name = "sort", required = false)String sort) throws InterruptedException {
+        System.out.println(name);
         int qsort;
         if (sort == null || "".equals(sort)) {
             qsort = SortType.INIT.getValue();
@@ -74,7 +75,7 @@ public class IPController {
 //            ToUsePy.catchGoods(String.valueOf(page), name, sort);
             stringRedisTemplate.opsForValue().set(code, String.valueOf(saveTime));
             stringRedisTemplate.opsForList().leftPush(REDIS_URL, new StringBuilder(name).append("_").append(page).append("_").append(qsort).toString());
-            AtomicInteger integer = new AtomicInteger(10);
+            AtomicInteger integer = new AtomicInteger(3);
             while(integer.decrementAndGet() > 0) {
                 List<JDModel> jdModelList = goodsListModel.getJdModelList();
                 List<TBModel> tbModelList = goodsListModel.getTbModelList();
@@ -204,7 +205,7 @@ public class IPController {
         if (goodsTB == goodsJD && goodsTB == -1) {
             return null;
         }
-        System.out.println(resultTB.get(goodsTB).getName() + " "+ resultJD.get(goodsJD).getName() + distance);
+        System.out.println(resultTB.get(goodsTB).getName() + " "+ resultJD.get(goodsJD).getName() + " " + distance);
         GoodsListModel model = new GoodsListModel();
         model.setParityJdModel(resultJD.get(goodsJD));
         model.setParityTbModel(resultTB.get(goodsTB));
