@@ -1,12 +1,10 @@
 .all .guide a{
-    font-family: "微软雅黑";
     font-size: smaller ;
-    color: black;
     font-weight:bold ;
 }
 
-.all .guide a:hover{
-    color: blue;
+.all .guide a:link, .all .guide a:active{
+    color: black;
 }
 
 .all{
@@ -24,19 +22,6 @@
     position: absolute;
     top: 0;
     right: 30px;
-}
-
-.all .content_guide .guide .product{
-    background:cornflowerblue;
-    display: inline-block;
-    height: 20px;
-    width: 58px;
-}
-
-.all .content_guide .guide .product a{
-    color: white;
-    text-decoration: none;
-
 }
 
 .all .search_content{
@@ -68,19 +53,19 @@
     height: 36px;
     position: absolute;
     left:300px;
-    top:60%;
+    top:40%;
 }
 
 .all .search_content .searchbox .ok{
     width: 100px;
     height: 36px;
     color: white;
-    background: #317ef3;
+    background: #b20a2c;
     border: 0;
     font-size:medium;
     position: absolute;
     left: 741px;
-    top:60%;
+    top:40%;
     text-align:center
 }
 
@@ -116,6 +101,7 @@
 
 .all .container .item_content .item_goods .pic
 {
+    margin-left: 8px;
     height: 160px;
     width: 160px;
     float:left;
@@ -165,6 +151,7 @@
 .all .container .item_content .item_goods .shop
 {
     margin-top: 18px;
+    margin-right: 8px;
     width: 180px;
     float:right;
 }

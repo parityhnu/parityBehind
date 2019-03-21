@@ -57,6 +57,14 @@ public class PageContontroller {
         return result;
     }
 
+    @RequestMapping("/modify")
+    public ModelAndView modify(@RequestParam(value = "href", required = false) String href) {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.addObject("href",href);
+        modelAndView.setViewName("modify");
+        return modelAndView;
+    }
+
     @RequestMapping("/search")
     public ModelAndView searchTest(@RequestParam(value = "name", required = false) String name,
                                    @RequestParam(value = "page", required = false) String page,

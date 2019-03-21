@@ -22,6 +22,7 @@
 </head>
 <style type="text/css">
     body{
+        background: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%);
         height: 100%;
         width: 100%;
     }
@@ -120,7 +121,7 @@
 <div class="all">
     <div class="content_guide">
         <div class="guide">
-            <a href="<%=session.getAttribute("user") == null ? "/login?href=/search?name="+name+"&page="+index +"&sort="+sort : ""%>"><%=session.getAttribute("user") == null ? "请登录" : "欢迎您," + session.getAttribute("user")%></a>
+            <a href="<%=session.getAttribute("user") == null ? "/login?href=/search?name="+name+"&page="+index +"&sort="+sort : "/modify"%>"><%=session.getAttribute("user") == null ? "请登录" : "欢迎您," + session.getAttribute("user")%></a>
             <% if (session.getAttribute("user") != null) {%>
                  <a href="<%="/signout?href=/search&name="+name+"&page="+index +"&sort="+sort%>">退出账户</a>
             <% }%>
@@ -130,10 +131,10 @@
 
     <div class="search_content">
         <div class="searchbox">
-            <img class="image1" src="img/baidu.png" height="129" width="270"/>
+            <img class="image1" src="img/title.png" height="129" width="270"/>
             <form action = "/search" onsubmit="return checkName()">
                 <input type="text" class="shuru" id = "name" name = "name"/>
-                <input type="submit" class="ok" value="百度一下"  style="cursor: pointer"  >
+                <input type="submit" class="ok" value="比价吧"  style="cursor: pointer"  >
             </form>
         </div>
     </div>
