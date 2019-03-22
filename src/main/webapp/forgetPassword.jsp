@@ -186,7 +186,7 @@
             <span>
                     <form action="post">
                         <p class="form"><input type="text" style="color: rgba(0,0,0,0.40)" id="account" placeholder="账户名"></p>
-                        <p class="form"><input type="password" style="color: rgba(0,0,0,0.40)" id="phone" placeholder="绑定的手机号"></p>
+                        <p class="form"><input type="number" style="color: rgba(0,0,0,0.40)" id="phone" placeholder="绑定的手机号"></p>
                         <p class="form"><input type="password" style="color: rgba(0,0,0,0.40)" id="passwd" placeholder="修改密码"></p>
                         <p class="form confirm"><input type="password" style="color: rgba(0,0,0,0.40)" id="confirm_passwd" placeholder="重复确定密码"></p>
                         <input type="button" value="返回" class="btn" onclick="back()" style="margin-right: 20px;">
