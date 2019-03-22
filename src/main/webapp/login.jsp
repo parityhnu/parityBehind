@@ -199,7 +199,7 @@
                         <input type="button" value="登录" class="btn" onclick="login()" style="margin-right: 20px;">
                         <input type="button" value="注册" class="btn" onclick='signin()' id="btn">
                     </form>
-                    <a href="#">忘记密码?</a>
+                    <a href="/forgetPassword?href=/login?href=<%=href%>">忘记密码?</a>
                 </span>
         </div>
 
@@ -310,9 +310,8 @@
                     else {
                         var json = JSON.parse(this.responseText);
                         if (json.uid > 0) {
-
                             hit.innerHTML = "登录成功";
-                            window.location.href = "<%=href%>";
+                            setTimeout(window.location.href = "<%=href%>", 1000);
                         } else {
                             if (json.uid == -1) {
                                 hit.innerHTML = "账户名或者密码错误";

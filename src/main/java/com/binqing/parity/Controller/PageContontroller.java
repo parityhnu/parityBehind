@@ -66,6 +66,14 @@ public class PageContontroller {
         return modelAndView;
     }
 
+    @RequestMapping("/forgetPassword")
+    public ModelAndView forgetPassword(@RequestParam(value = "href", required = false) String href) {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.addObject("href",href);
+        modelAndView.setViewName("forgetPassword");
+        return modelAndView;
+    }
+
     @RequestMapping("/search")
     public ModelAndView searchTest(@RequestParam(value = "name", required = false) String name,
                                    @RequestParam(value = "page", required = false) String page,

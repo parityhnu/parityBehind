@@ -57,13 +57,13 @@
         }
         #modify_wrap{
             width: 980px;
-            min-height: 600px;
+            min-height: 500px;
             border-radius: 10px;
             font-family: "neo";
             overflow: hidden;
             box-shadow: 0px 0px 120px rgba(0, 0, 0, 0.25);
             position: fixed;
-            top: 40%;
+            top: 50%;
             right: 50%;
             margin-top: -250px;
             margin-right: -490px;
@@ -71,7 +71,7 @@
         #modify{
             width: 50%;
             height: 100%;
-            min-height: 600px;
+            min-height: 500px;
             background: linear-gradient(to top, #cfd9df 0%, #e2ebf0 100%);
             position: relative;
             float: right;
@@ -94,9 +94,9 @@
         #modify span{
             text-align: center;
             position: absolute;
-            left: 45%;
+            left: 50%;
             margin-left: -150px;
-            top: 45%;
+            top: 52%;
             margin-top: -140px;
         }
         #modify span a{
@@ -180,23 +180,18 @@
     <div id="modify_wrap">
         <div id="modify">
             <div id="status">
-                <i style="right: 5px">修改资料</i>
+                <i style="right: 5px">忘记密码</i>
             </div>
 
             <span>
                     <form action="post">
-                        <p class="form"><input type="text" style="color: rgba(0,0,0,0.40)" id="uname" placeholder="<%="现昵称:" + session.getAttribute("name")%>"></p>
-                        <p class="form"><input type="password" style="color: rgba(0,0,0,0.40)" id="passwd_present" placeholder="原密码"></p>
+                        <p class="form"><input type="text" style="color: rgba(0,0,0,0.40)" id="account" placeholder="账户名"></p>
+                        <p class="form"><input type="password" style="color: rgba(0,0,0,0.40)" id="phone" placeholder="绑定的手机号"></p>
                         <p class="form"><input type="password" style="color: rgba(0,0,0,0.40)" id="passwd" placeholder="修改密码"></p>
                         <p class="form confirm"><input type="password" style="color: rgba(0,0,0,0.40)" id="confirm_passwd" placeholder="重复确定密码"></p>
-                        <p class="form confirm"><input type="number" style="color: rgba(0,0,0,0.40)" id="phone_present" placeholder="<%="原手机号:" + session.getAttribute("ph")%>"></p>
-                        <p class="form confirm"><input type="number" style="color: rgba(0,0,0,0.40); font-style: normal" id="phone" placeholder="新手机号"></p>
-                        <p style="color: rgba(0,0,0,0.40); font-size: 14px">tip:请填写您需要更改的资料，密码和手机号需要填写验证</p>
                         <input type="button" value="返回" class="btn" onclick="back()" style="margin-right: 20px;">
                         <input type="button" value="修改" class="btn" onclick='modify()' id="btn">
                     </form>
-
-                    <a href="/forgetPassword?href=/modify?href=<%=href%>">忘记密码?</a>
                 </span>
         </div>
 
@@ -207,10 +202,6 @@
 
 
 <script>
-    var user = "<%=session.getAttribute("user")%>";
-    if ("null" == user) {
-        window.location.href = "/login";
-    }
     //引用hint()在最上方弹出提示
     function hint() {
         var hit = document.getElementById("hint");
@@ -226,15 +217,14 @@
         }, 3000);
     }
     //回调函数
-    function submit(callback, user, s1, s2, modifyType) {
+    function submit(callback, account, phone, password) {
         var request = new XMLHttpRequest();
-        var url = "http://localhost:9090/user/modify";
+        var url = "http://localhost:9090/user/forgetPassword";
         request.open("post", url, true);
         var data = new FormData();
-        data.append("user", user);
-        data.append("s1", s1);
-        data.append("s2", s2);
-        data.append("modifyType", modifyType);
+        data.append("account", account);
+        data.append("phone", phone);
+        data.append("password", password);
         request.onreadystatechange = function() {
             if (this.readyState == 4) {
                 callback.call(this, this.responseText)
@@ -246,83 +236,34 @@
     function modify() {
         var hit = document.getElementById("hint").getElementsByTagName("p")[0];
         hit.innerHTML = "";
-        var uname = document.getElementById("uname");
-        var passwd_present = document.getElementById("passwd_present");
+        var account = document.getElementById("account");
         var passwd = document.getElementById("passwd");
         var con_pass = document.getElementById("confirm_passwd");
-        var phone_present = document.getElementById("phone_present");
         var phone = document.getElementById("phone");
-        var modifyName = false;
-        var modifyPwd = false;
-        var modifyPhone = false;
-        var checkPwd = false;
-        var checkPhone = false;
 
-        if (uname.value != "") {
-            modifyName = true;
-        }
-
-        if (passwd_present.value != "" || passwd.value != "" || con_pass.value != "") {
-            modifyPwd = true;
-            //每次只需要check输入的新密码
+        if (account.value != "" && passwd.value != "" && con_pass.value != "" && phone.value != "") {
             if (passwd.value != con_pass.value) {
-                hit.innerHTML += " 两次密码不相等";
+                hit.innerHTML = " 两次密码不相等";
             } else if (!/((?=.*[a-z])(?=.*\d)|(?=[a-z])(?=.*[#@!~%^&*])|(?=.*\d)(?=.*[#@!~%^&*]))[a-z\d#@!~%^&*]{6,12}/i.test(passwd.value)) {
-                hit.innerHTML += " 密码的长度为6-12，且必须由英文、数字或特殊字符的两种或以上组合";
+                hit.innerHTML = " 密码的长度为6-12，且必须由英文、数字或特殊字符的两种或以上组合";
             } else if (!/((?=.*[a-z])(?=.*\d)|(?=[a-z])(?=.*[#@!~%^&*])|(?=.*\d)(?=.*[#@!~%^&*]))[a-z\d#@!~%^&*]{6,12}/i.test(con_pass.value)) {
-                hit.innerHTML += " 密码的长度为6-12，且必须由英文、数字或特殊字符的两种或以上组合";
-            } else if (passwd_present.value == passwd.value) {
-                hit.innerHTML += "密码不能和原密码相同";
-            } else{
-                checkPwd = true;
-            }
-        }
-
-        if (phone_present.value != "" || phone.value != "") {
-            modifyPhone = true;
-            if (phone.value.length == 11 && phone_present.value.length == 11) {
-                checkPhone = true;
-            } else if (phone.value == phone_present.value) {
-                hit.innerHTML += "手机号不能和原手机号相同";
+                hit.innerHTML = " 密码的长度为6-12，且必须由英文、数字或特殊字符的两种或以上组合";
+            } else if (phone.value.length != 11) {
+                hit.innerHTML = "手机号应为11位";
             } else {
-                hit.innerHTML += " 手机号必须为11位"
-            }
-        }
-
-        if ((modifyPhone == checkPhone) && (modifyPwd == checkPwd)) {
-            hit.innerHTML = "";
-            //需要更改的都check
-            if (modifyName) {
                 submit(function(res) {
-                    console.log(res);
-                    if (res === uname.value) {
-                        hit.innerHTML += "修改昵称成功";
+                    if (res === account.value) {
+                        hit.innerHTML = "设置成功";
+                        setTimeout(window.location.href = "<%=href%>", 1000);
+                    } else {
+                        hit.innerHTML = "账户名或者手机号填写错误";
                     }
-                },"<%=session.getAttribute("user")%>", uname.value, null, "0");
+                },account.value, phone.value, passwd.value);
             }
-
-            if (modifyPhone) {
-                submit(function(res) {
-                    if (res === phone.value) {
-                        hit.innerHTML += " 修改手机成功";
-                    }
-                },"<%=session.getAttribute("user")%>", phone_present.value, phone.value, "1");
-            }
-
-            if (modifyPwd) {
-                submit(function(res) {
-                    if (res === passwd.value) {
-                        hit.innerHTML += " 修改密码成功";
-                    }
-                },"<%=session.getAttribute("user")%>", passwd_present.value, passwd.value, "2");
-            }
-            setTimeout("window.location.reload()", 2000);
-        } else if (!modifyPwd && !modifyPhone && !modifyName) {
-            hit.innerHTML = "没有需要更改的";
+        } else {
+            hit.innerHTML = "请输入全部的信息";
         }
         hint();
-
-
     }
 
     //返回按钮
