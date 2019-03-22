@@ -36,7 +36,7 @@
             margin-bottom: 20px;
         }
         .form input::placeholder{
-            color: rgba(255,255,255,0.8);
+            color: rgba(0,0,0,0.40);
             font-size: 18px;
             font-family: "neo";
         }
@@ -215,7 +215,6 @@
     var passwd = document.getElementById("passwd");
     var con_pass = document.getElementById("confirm-passwd");
     var phone = document.getElementById("phone");
-    console.log(user);
 
     //引用hint()在最上方弹出提示
     function hint() {
@@ -269,10 +268,10 @@
                 hit.innerHTML = "账号长度必须大于6位";
             else if (passwd.value.length < 6 || passwd.value.length > 12)
                 hit.innerHTML = "密码长度必须大于6位，小于12位";
-            else if (!(/^[A-Za-z0-9]+$/.test(user.value) ||
-                /[a-zA-Z~!@#$%^&*.]+/.test(user.value) ||
-                /[\d~!@#$%^&*.]*/.test(user.value) ||
-                /[\da-zA-Z~!@#$%^&*.]+/.test(user.value)))
+            else if (!(/^[A-Za-z0-9]+$/.test(passwd.value) ||
+                /[a-zA-Z~!@#$%^&*.]+/.test(passwd.value) ||
+                /[\d~!@#$%^&*.]*/.test(passwd.value) ||
+                /[\da-zA-Z~!@#$%^&*.]+/.test(passwd.value)))
                 hit.innerHTML = "密码必须由英文、数字或特殊字符的两种或以上组合";
             else if (passwd.value != con_pass.value)
                 hit.innerHTML = "两次密码不相等";
@@ -311,7 +310,7 @@
                     else {
                         var json = JSON.parse(this.responseText);
                         if (json.uid > 0) {
-                            //todo 登录成功
+
                             hit.innerHTML = "登录成功";
                             window.location.href = "<%=href%>";
                         } else {

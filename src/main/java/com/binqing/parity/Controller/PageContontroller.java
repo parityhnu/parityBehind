@@ -33,7 +33,8 @@ public class PageContontroller {
                           @RequestParam(value = "sort", required = false) String sort) throws UnsupportedEncodingException {
         HttpSession session = request.getSession();
         session.setAttribute("user", null);
-        session.setAttribute("account", null);
+        session.setAttribute("name", null);
+        session.setAttribute("ph", null);
         String result = "";
         if (href == null || "".equals(href)) {
             result = "redirect:/hello";

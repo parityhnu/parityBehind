@@ -49,16 +49,16 @@ public class UserController {
 //        return list;
 //    }
 
-    @GetMapping("/testmodify")
-    public List<String> testmodify() throws InvalidKeySpecException, NoSuchAlgorithmException {
-        List<String>list = new ArrayList<>();
-        list.add(modify("22","123",null,"0"));
-        list.add(modify("22","1351147651","15074969752","1"));
-        list.add(modify("22","13511476510","15074969752","1"));
-        list.add(modify("22","123","123123","2"));
-        list.add(modify("22","123456","123123","2"));
-        return list;
-    }
+//    @GetMapping("/testmodify")
+//    public List<String> testmodify() throws InvalidKeySpecException, NoSuchAlgorithmException {
+//        List<String>list = new ArrayList<>();
+//        list.add(modify("22","123",null,"0"));
+//        list.add(modify("22","1351147651","15074969752","1"));
+//        list.add(modify("22","13511476510","15074969752","1"));
+//        list.add(modify("22","123","123123","2"));
+//        list.add(modify("22","123456","123123","2"));
+//        return list;
+//    }
 
     @PostMapping("/register")
     public UserModel register(@RequestParam String account, @RequestParam String password, @RequestParam String phone) throws InvalidKeySpecException, NoSuchAlgorithmException {
@@ -68,7 +68,7 @@ public class UserController {
             return null;
         }
         String sql2 = "insert into user(account, name, phone) values (?,?,?);";
-        jdbcTemplate.update(sql2, account, "Parity" + account, phone);
+        jdbcTemplate.update(sql2, account, "Parity_" + account, phone);
         UserModel userModel = queryUserByAccount(account);
         String salt =createSalt();
         password = PasswordHash.createHash(password + salt);
@@ -99,8 +99,7 @@ public class UserController {
                             //清空次数
                             wrongtimes = 0;
                             result = queryUserByAccount(account);
-                            session.setAttribute("user", result.getUname());
-                            session.setAttribute("ac", account);
+                            setSession(session, result);
                         } else {
                             //设置次数为1，并且更新state
                             wrongtimes = 1;
@@ -116,8 +115,7 @@ public class UserController {
                         //清空次数
                         wrongtimes = 0;
                         result = queryUserByAccount(account);
-                        session.setAttribute("user", result.getUname());
-                        session.setAttribute("ac", account);
+                        setSession(session, result);
                     } else {
                         wrongtimes += 1;
                         result.setUid(LoginStatus.WRONG.getValue());
@@ -137,6 +135,14 @@ public class UserController {
             result.setUid(LoginStatus.WRONG.getValue());
             return result;
         }
+    }
+
+    private void setSession(HttpSession session, UserModel result) {
+        session.setAttribute("user", result.getUid());
+        session.setAttribute("name", result.getUname());
+        StringBuilder builder = new StringBuilder(result.getPhone());
+        builder.replace(3, 7, "****");
+        session.setAttribute("ph", builder.toString());
     }
 
     @PostMapping("/requestPhone")
@@ -161,7 +167,8 @@ public class UserController {
     }
 
     @PostMapping("/modify")
-    public String modify(@RequestParam String user, @RequestParam String s1, @RequestParam(value = "s2",required = false) String s2, @RequestParam String modifyType) throws InvalidKeySpecException, NoSuchAlgorithmException {
+    public String modify(HttpServletRequest request, @RequestParam String user, @RequestParam String s1, @RequestParam(value = "s2",required = false) String s2, @RequestParam String modifyType) throws InvalidKeySpecException, NoSuchAlgorithmException {
+        HttpSession session = request.getSession();
         String sql;
         switch (modifyType) {
             case "0":
@@ -170,6 +177,7 @@ public class UserController {
                 }
                 sql = "update user set name = ? where uid = ?";
                 if (jdbcTemplate.update(sql, s1, user) == 1) {
+                    session.setAttribute("name", s1);
                     return s1;
                 } else {
                     return "";
@@ -184,6 +192,9 @@ public class UserController {
                 if (s1.equals(requestPhone(user))) {
                     sql = "update user set phone = ? where uid = ?";
                     if (jdbcTemplate.update(sql, s2, user) == 1) {
+                        StringBuilder builder = new StringBuilder(s2);
+                        builder.replace(3, 7, "****");
+                        session.setAttribute("ph", builder.toString());
                         return s2;
                     } else {
                         return "";
@@ -214,6 +225,38 @@ public class UserController {
                 return "";
         }
     }
+
+    @PostMapping("/forgetPassword")
+    public String forgetPassword(@RequestParam String account, @RequestParam String phone, @RequestParam String password) throws InvalidKeySpecException, NoSuchAlgorithmException {
+        if (account == null || "".equals(account)) {
+            return "-1";
+        }
+        if (phone == null || "".equals(phone)) {
+            return "-1";
+        }
+        if (password == null || "".equals(password)) {
+            return "-1";
+        }
+        String sql = "select phone from user where account =?" ;
+        try {
+            String phone_check = jdbcTemplate.queryForObject(sql, new String[]{account}, (resultSet, i) -> resultSet.getString("phone"));
+            if (phone.equals(phone_check)) {
+                String sql2 = "update login set password = ? , salt = ? where account = ?";
+                String salt =createSalt();
+                password = PasswordHash.createHash(password + salt);
+                if (jdbcTemplate.update(sql2, password, salt, account) == 1) {
+                    return account;
+                } else {
+                    return "-1";
+                }
+            } else {
+                return "-1";
+            }
+        }catch (Exception e) {
+            return "-1";
+        }
+    }
+
 
     private String createSalt() {
         byte [] values = new byte[128];

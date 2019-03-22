@@ -99,7 +99,7 @@
 <div class="all">
     <div class="content_guide">
         <div class="guide">
-            <a href="<%=session.getAttribute("user") == null ? "/login" : "/modify"%>"><%=session.getAttribute("user") == null ? "请登录" : "欢迎您," + session.getAttribute("user")%></a>  
+            <a href="<%=session.getAttribute("user") == null ? "/login" : "/modify"%>"><%=session.getAttribute("user") == null ? "请登录" : "欢迎您," + session.getAttribute("name")%></a>  
             <% if (session.getAttribute("user") != null) {%>
             <a href="/signout">退出账户</a>
             <% }%>

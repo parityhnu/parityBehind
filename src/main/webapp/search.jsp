@@ -68,6 +68,12 @@
     GoodsListModel goodsListModel = HttpService.getGoods(name, index, sort);
     JDModel parityJD = goodsListModel.getParityJdModel();
     TBModel parityTB = goodsListModel.getParityTbModel();
+    if (parityJD != null && parityJD.getName().length() > 30) {
+        parityJD.setName(parityJD.getName().substring(0,30));
+    }
+    if (parityTB != null && parityTB.getName().length() > 30) {
+        parityTB.setName(parityTB.getName().substring(0,30));
+    }
     List<GoodsModel> goodsList = new ArrayList<>();
     if (goodsListModel.getTbModelList() != null && !goodsListModel.getTbModelList().isEmpty()) {
         goodsList.addAll(goodsListModel.getTbModelList());
@@ -121,7 +127,7 @@
 <div class="all">
     <div class="content_guide">
         <div class="guide">
-            <a href="<%=session.getAttribute("user") == null ? "/login?href=/search?name="+name+"&page="+index +"&sort="+sort : "/modify"%>"><%=session.getAttribute("user") == null ? "请登录" : "欢迎您," + session.getAttribute("user")%></a>
+            <a href="<%=session.getAttribute("user") == null ? "/login?href=/search?name="+name+"&page="+index +"&sort="+sort : "/modify?href=/search?name="+name+"&page="+index +"&sort="+sort%>"><%=session.getAttribute("user") == null ? "请登录" : "欢迎您," + session.getAttribute("name")%></a>
             <% if (session.getAttribute("user") != null) {%>
                  <a href="<%="/signout?href=/search&name="+name+"&page="+index +"&sort="+sort%>">退出账户</a>
             <% }%>
@@ -169,7 +175,7 @@
 
                     <div class = "title">
                         <a class="title" style="font-size: 14px"  target="_blank" href="" >
-                            <%=parityJD == null ? parityTB.getName().substring(0,30) + "..." : parityJD.getName().substring(0,30) + "..."%>
+                            <%=parityJD == null ? parityTB.getName(): parityJD.getName()%>
                         </a>
                     </div>
 
