@@ -8,6 +8,9 @@ import com.binqing.parity.Model.JDModel;
 import com.binqing.parity.Model.SearchModel;
 import com.binqing.parity.Model.TBModel;
 import com.binqing.parity.Service.HttpService;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.internal.MongoClientImpl;
+import org.apache.http.HttpResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -19,6 +22,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -35,7 +42,6 @@ public class IPController {
     MongoTemplate mongoTemplate;
 
     private static final String REDIS_URL = "redis_url";
-
     /**
      * 暂定存商品名称以及page页，
      * 如果要分几个服务器来爬，则选择存不同电商的url
@@ -114,26 +120,13 @@ public class IPController {
         return goodsListModel;
     }
 
-    @GetMapping("/get")
-    public SearchModel get() {
-        SearchModel searchModel = new SearchModel();
-        try {
-            String result = stringRedisTemplate.opsForList().rightPop(REDIS_URL);
-            searchModel.setPage(Integer.parseInt(result.split("_",2)[1]));
-            searchModel.setGoodName(result.split("_",2)[0]);
-        } catch (RuntimeException e) {
-            searchModel = null;
-        } finally {
-            return searchModel;
-        }
-    }
-
     @GetMapping("/test")
-    public GoodsListModel test() {
-        return HttpService.getGoods("iphone", "0", "0");
+    public GoodsListModel test() throws URISyntaxException {
+        return HttpService.test();
     }
 
-    @GetMapping("/test2")
+
+        @GetMapping("/test2")
     public List<TBModel> test2() {
         return findList("眼镜", 1, 0,  TBModel.class);
     }
@@ -164,6 +157,9 @@ public class IPController {
     }
 
     private GoodsListModel parity(List<JDModel> jdModelList, List<TBModel> tbModelList, String keyword) {
+        if (jdModelList == null || tbModelList == null || jdModelList.isEmpty() || tbModelList.isEmpty()) {
+            return null;
+        }
         List<TBModel> resultTB = new ArrayList<>();
         List<JDModel> resultJD = new ArrayList<>();
         for (TBModel model : tbModelList) {

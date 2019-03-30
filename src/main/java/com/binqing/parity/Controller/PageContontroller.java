@@ -1,5 +1,6 @@
 package com.binqing.parity.Controller;
 
+import com.binqing.parity.Model.GoodsListModel;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -77,7 +78,8 @@ public class PageContontroller {
     @RequestMapping("/search")
     public ModelAndView searchTest(@RequestParam(value = "name", required = false) String name,
                                    @RequestParam(value = "page", required = false) String page,
-                                   @RequestParam(value = "sort", required = false) String sort) {
+                                   @RequestParam(value = "sort", required = false) String sort,
+                                   @RequestParam(value = "goodsListModel", required = false)GoodsListModel goodsListModel) {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.addObject("name",name);
         modelAndView.addObject("page",page);

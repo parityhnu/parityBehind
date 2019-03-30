@@ -86,13 +86,14 @@ public class UserController {
         UserModel result = new UserModel();
         try {
             LoginModel loginModel = validatePasswordBysql(sql, new String[]{account});
+            System.out.println(loginModel);
             if (loginModel == null) {
                 result.setUid(LoginStatus.WRONG.getValue());
             } else {
                 boolean isNeedUpdateState = true;
                 long state = loginModel.getState();
                 int wrongtimes = loginModel.getWrongtimes();
-                if (wrongtimes >= 3) {
+                    if (wrongtimes >= 3) {
                     //错误超过3次，如未到5分钟则不做操作。如果到了5分钟，那么继续错误的话就设为1并更新state
                     if (System.currentTimeMillis() - state > TimeConsts.MILLS_OF_ONE_MINUTE * 5) {
                         if (PasswordHash.validatePassword( password + loginModel.getSalt(), loginModel.getPassword())) {
@@ -166,8 +167,10 @@ public class UserController {
         return phone;
     }
 
+    //todo 有空的话 把这些错误清况整理一下...
     @PostMapping("/modify")
     public String modify(HttpServletRequest request, @RequestParam String user, @RequestParam String s1, @RequestParam(value = "s2",required = false) String s2, @RequestParam String modifyType) throws InvalidKeySpecException, NoSuchAlgorithmException {
+        System.out.println(user + "_" + modifyType + "_" + s1);
         HttpSession session = request.getSession();
         String sql;
         switch (modifyType) {
@@ -228,6 +231,7 @@ public class UserController {
 
     @PostMapping("/forgetPassword")
     public String forgetPassword(@RequestParam String account, @RequestParam String phone, @RequestParam String password) throws InvalidKeySpecException, NoSuchAlgorithmException {
+        System.out.println(account + "_" + phone + "_" + password);
         if (account == null || "".equals(account)) {
             return "-1";
         }
