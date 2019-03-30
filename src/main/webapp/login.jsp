@@ -234,7 +234,7 @@
     function submit(callback) {
         if (passwd.value == con_pass.value) {
             var request = new XMLHttpRequest();
-            var url = "http://localhost:9090/user/register";
+            var url = "/user/register";
             request.open("post", url, true);
             var data = new FormData();
             data.append("account", user.value);
@@ -297,7 +297,7 @@
         if (onoff) {
             var hit = document.getElementById("hint").getElementsByTagName("p")[0];
             var request = new XMLHttpRequest();
-            var url = "http://localhost:9090/user/login";
+            var url = "/user/login";
             request.open("post", url, true);
             var data = new FormData();
             data.append("account", user.value);

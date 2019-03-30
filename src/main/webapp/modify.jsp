@@ -228,7 +228,7 @@
     //回调函数
     function submit(callback, user, s1, s2, modifyType) {
         var request = new XMLHttpRequest();
-        var url = "http://localhost:9090/user/modify";
+        var url = "/user/modify";
         request.open("post", url, true);
         var data = new FormData();
         data.append("user", user);

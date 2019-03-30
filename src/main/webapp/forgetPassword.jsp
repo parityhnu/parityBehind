@@ -219,7 +219,7 @@
     //回调函数
     function submit(callback, account, phone, password) {
         var request = new XMLHttpRequest();
-        var url = "http://localhost:9090/user/forgetPassword";
+        var url = "/user/forgetPassword";
         request.open("post", url, true);
         var data = new FormData();
         data.append("account", account);
