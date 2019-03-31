@@ -16,7 +16,7 @@ spring:
     password:
   data:
     mongodb:
-      uri: mongodb://localhost/parity
+      uri: mongodb://47.100.108.8/parity
   mvc:
     view:
       prefix: /

@@ -81,7 +81,7 @@ public class IPController {
 //            ToUsePy.catchGoods(String.valueOf(page), name, sort);
             stringRedisTemplate.opsForValue().set(code, String.valueOf(saveTime));
             stringRedisTemplate.opsForList().leftPush(REDIS_URL, new StringBuilder(name).append("_").append(page).append("_").append(qsort).toString());
-            AtomicInteger integer = new AtomicInteger(3);
+            AtomicInteger integer = new AtomicInteger(8);
             while(integer.decrementAndGet() > 0) {
                 List<JDModel> jdModelList = goodsListModel.getJdModelList();
                 List<TBModel> tbModelList = goodsListModel.getTbModelList();
