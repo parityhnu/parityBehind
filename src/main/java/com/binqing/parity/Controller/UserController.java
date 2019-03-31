@@ -174,7 +174,7 @@ public class UserController {
         HttpSession session = request.getSession();
         String sql;
         switch (modifyType) {
-            case "0":
+            case "0"://修改昵称
                 if (s1 == null || "".equals(s1)) {
                     return "";
                 }
@@ -203,7 +203,7 @@ public class UserController {
                         return "";
                     }
                 }
-            case "2":
+            case "2"://修改密码
                 if (s1 == null || "".equals(s1) || s2 == null || "".equals(s2)) {
                     return "";
                 }
