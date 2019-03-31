@@ -3,6 +3,7 @@ package com.binqing.parity.Controller;
 import com.binqing.parity.Consts.TimeConsts;
 import com.binqing.parity.Enum.LoginStatus;
 import com.binqing.parity.Model.LoginModel;
+import com.binqing.parity.Model.StringModel;
 import com.binqing.parity.Model.UserModel;
 import com.binqing.parity.PasswordHash;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,13 +28,10 @@ public class UserController {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 //
-//    @GetMapping("/testall")
-//    public List<UserModel> testall() throws InvalidKeySpecException, NoSuchAlgorithmException {
-//        List<UserModel> list = new ArrayList<>();
-//        list.add(register("qing123","123456","13511476510"));
-//        list.add(login("qing123","123456"));
-//        return list;
-//    }
+    @GetMapping("/test")
+    public StringModel testall(@RequestParam String user) throws InvalidKeySpecException, NoSuchAlgorithmException {
+        return requestPhone(user);
+    }
 //
 //    @GetMapping("/testlogin")
 //    public List<UserModel> testLogin() throws InvalidKeySpecException, NoSuchAlgorithmException {
@@ -146,10 +144,31 @@ public class UserController {
         session.setAttribute("ph", builder.toString());
     }
 
-    @PostMapping("/requestPhone")
-    public String requestPhone(@RequestParam String user) {
+    @PostMapping("/requestName")
+    public StringModel requestName(@RequestParam String user) {
         if (user == null || "".equals(user)) {
-            return "";
+            return null;
+        }
+        String name = "";
+        String sql = "select name from user where uid = ?";
+        try {
+            name = jdbcTemplate.queryForObject(sql, new String[]{user}, new RowMapper<String>() {
+                @Override
+                public String mapRow(ResultSet resultSet, int i) throws SQLException {
+                    String phone = resultSet.getString("name");
+                    return phone;
+                }
+            });
+        } catch (Exception e) {
+            return null;
+        }
+        return new StringModel(name);
+    }
+
+    @PostMapping("/requestPhone")
+    public StringModel requestPhone(@RequestParam String user) {
+        if (user == null || "".equals(user)) {
+            return null;
         }
         String phone = "";
         String sql = "select phone from user where uid = ?";
@@ -162,53 +181,53 @@ public class UserController {
                 }
             });
         } catch (Exception e) {
-            return "";
+            return null;
         }
-        return phone;
+        return new StringModel(phone);
     }
 
     //todo 有空的话 把这些错误清况整理一下...
     @PostMapping("/modify")
-    public String modify(HttpServletRequest request, @RequestParam String user, @RequestParam String s1, @RequestParam(value = "s2",required = false) String s2, @RequestParam String modifyType) throws InvalidKeySpecException, NoSuchAlgorithmException {
+    public StringModel modify(HttpServletRequest request, @RequestParam String user, @RequestParam String s1, @RequestParam(value = "s2",required = false) String s2, @RequestParam String modifyType) throws InvalidKeySpecException, NoSuchAlgorithmException {
         System.out.println(user + "_" + modifyType + "_" + s1);
         HttpSession session = request.getSession();
         String sql;
         switch (modifyType) {
             case "0":
                 if (s1 == null || "".equals(s1)) {
-                    return "";
+                    return null;
                 }
                 sql = "update user set name = ? where uid = ?";
                 if (jdbcTemplate.update(sql, s1, user) == 1) {
                     session.setAttribute("name", s1);
-                    return s1;
+                    return new StringModel(s1);
                 } else {
-                    return "";
+                    return null;
                 }
             case "1":
                 if (s1 == null || "".equals(s1) || s2 == null || "".equals(s2)) {
-                    return "";
+                    return null;
                 }
                 if (s1.equals(s2)) {
-                    return s2;
+                    return new StringModel(s2);
                 }
-                if (s1.equals(requestPhone(user))) {
+                if (s1.equals(requestPhone(user).getString())) {
                     sql = "update user set phone = ? where uid = ?";
                     if (jdbcTemplate.update(sql, s2, user) == 1) {
                         StringBuilder builder = new StringBuilder(s2);
                         builder.replace(3, 7, "****");
                         session.setAttribute("ph", builder.toString());
-                        return s2;
+                        return new StringModel(s2);
                     } else {
-                        return "";
+                        return null;
                     }
                 }
             case "2":
                 if (s1 == null || "".equals(s1) || s2 == null || "".equals(s2)) {
-                    return "";
+                    return null;
                 }
                 if (s1.equals(s2)) {
-                    return s2;
+                    return new StringModel(s2);
                 }
                 sql = "select * from login where uid =?" ;
                 LoginModel loginModel = validatePasswordBysql(sql, new String[]{user});
@@ -217,29 +236,29 @@ public class UserController {
                     String salt =createSalt();
                     String password = PasswordHash.createHash(s2 + salt);
                     if (jdbcTemplate.update(sql2, password, salt, user) == 1) {
-                        return s2;
+                        return new StringModel(s2);
                     } else {
-                        return "";
+                        return null;
                     }
                 } else {
-                    return "";
+                    return null;
                 }
             default:
-                return "";
+                return null;
         }
     }
 
     @PostMapping("/forgetPassword")
-    public String forgetPassword(@RequestParam String account, @RequestParam String phone, @RequestParam String password) throws InvalidKeySpecException, NoSuchAlgorithmException {
+    public StringModel forgetPassword(@RequestParam String account, @RequestParam String phone, @RequestParam String password) throws InvalidKeySpecException, NoSuchAlgorithmException {
         System.out.println(account + "_" + phone + "_" + password);
         if (account == null || "".equals(account)) {
-            return "-1";
+            return new StringModel("-1");
         }
         if (phone == null || "".equals(phone)) {
-            return "-1";
+            return new StringModel("-1");
         }
         if (password == null || "".equals(password)) {
-            return "-1";
+            return new StringModel("-1");
         }
         String sql = "select phone from user where account =?" ;
         try {
@@ -249,15 +268,15 @@ public class UserController {
                 String salt =createSalt();
                 password = PasswordHash.createHash(password + salt);
                 if (jdbcTemplate.update(sql2, password, salt, account) == 1) {
-                    return account;
+                    return new StringModel(account);
                 } else {
-                    return "-1";
+                    return new StringModel("-1");
                 }
             } else {
-                return "-1";
+                return new StringModel("-1");
             }
         }catch (Exception e) {
-            return "-1";
+            return new StringModel("-1");
         }
     }
 
