@@ -74,7 +74,10 @@
             if (goodsModel == null) {
                 continue;
             }
-            goodsModel.setName(goodsModel.getName().substring(0,30));
+            if (goodsModel.getName().length()>30) {
+                goodsModel.setName(goodsModel.getName().substring(0,30));
+            }
+
         }
     }
 
