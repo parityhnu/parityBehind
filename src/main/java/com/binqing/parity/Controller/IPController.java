@@ -67,7 +67,6 @@ public class IPController {
         //否则直接进mongoDB找
         GoodsListModel goodsListModel = new GoodsListModel();
         if (time == null || (time != null && saveTime - Long.parseLong(time) > TimeConsts.MILLS_OF_ONE_DAY)) {
-//            ToUsePy.catchGoods(String.valueOf(page), name, sort);
             stringRedisTemplate.opsForValue().set(code, String.valueOf(saveTime));
             stringRedisTemplate.opsForList().leftPush(REDIS_URL, new StringBuilder(name).append("_").append(qsort).toString());
             AtomicInteger integer = new AtomicInteger(10);
