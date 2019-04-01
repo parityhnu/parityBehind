@@ -15,13 +15,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
-@RestController()
+@RestController
 @RequestMapping("/ip")
 public class IPController {
 
@@ -43,6 +41,7 @@ public class IPController {
      */
     @GetMapping("/search")
     public GoodsListModel search(@RequestParam String name, @RequestParam int page, @RequestParam(name = "sort", required = false)String sort) throws InterruptedException {
+        System.out.println(name);
         int qsort;
         if (sort == null || "".equals(sort)) {
             qsort = SortType.INIT.getValue();
@@ -102,11 +101,6 @@ public class IPController {
         return goodsListModel;
     }
 
-    @GetMapping("/cookies")
-    public Cookie[] getCookies(HttpServletRequest request){
-        return request.getCookies();
-    }
-
     private  <T>List<T> findList(String keyword, int page, int sort, Class<T> clazz) {
         return findList(keyword, page, sort, 0, 0, clazz);
     }
@@ -138,6 +132,7 @@ public class IPController {
         return mongoTemplate.find(query, clazz);
     }
 
+
     private  <T>List<T> findMaxPage(String keyword, int sort, Class<T> clazz) {
         Query query = new Query();
         Criteria criteria = Criteria.where("keyword").is(keyword);
@@ -147,6 +142,7 @@ public class IPController {
         query.limit(1);
         query.with(new Sort(new Sort.Order(Sort.Direction.DESC, "page")));
         return mongoTemplate.find(query, clazz);
+
     }
 
 //    private GoodsListModel parity(List<JDModel> jdModelList, List<TBModel> tbModelList, String keyword) {

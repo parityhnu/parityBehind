@@ -14,6 +14,7 @@
 <style type="text/css">
 
     body{
+        background: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%);
         height: 100%;
         width: 100%;
     }
@@ -22,27 +23,45 @@
         padding: 0;
         margin: 0;
     }
+
+    a{
+        text-decoration: none;
+    }
+
+    a:link, a:visited {
+        color: #5a5a5a;
+    }
+
+    a:hover, a:active{
+        color: #E62652;
+    }
+
     .all .guide a{
-        font-family: "微软雅黑";
         font-size: smaller ;
-        color: black;
         font-weight:bold ;
     }
 
-    .all .guide a:hover{
-        color: blue;
+    .all .guide a:link, .all .guide a:active{
+        color: black;
     }
 
     .all{
         width: 100%;
     }
 
-    .all .guide{
+    .all .content_guide{
+        height: 25px;
+        -webkit-box-shadow: #E0E0E0 0px 0px 1px;
+        -moz-box-shadow: #E0E0E0 0px 0px 1px;
+        box-shadow: #E0E0E0 0px 0px 1px;
+    }
+
+    .all .content_guide .guide{
         position: absolute;
         top: 0;
-        right: 0;
-        width:450px;
+        right: 30px;
     }
+
 
     .all .searchbox{
         height:350px;
@@ -53,20 +72,6 @@
         bottom: 0;
         left: 0;
         right: 0;
-    }
-
-    .all .guide .product{
-        background:cornflowerblue;
-        display: inline-block;
-        height: 20px;
-        width: 58px;
-
-    }
-
-    .all .guide .product a{
-        color: white;
-        text-decoration: none;
-
     }
 
     .all .searchbox .shuru{
@@ -80,7 +85,7 @@
         width: 100px;
         height: 36px;
         color: white;
-        background: #317ef3;
+        background: #b20a2c;
         border: 0;
         font-size:medium;
         position: absolute;
@@ -92,22 +97,20 @@
 
 <body>
 <div class="all">
-    <div class="guide">
-        <a href="https://www.baidu.com">新闻</a>  
-        <a href="">hao123</a>  
-        <a href="">地图</a>  
-        <a href="">视频</a>  
-        <a href="">贴吧</a>  
-        <a href="">学术</a>  
-        <a href="">登录</a>  
-        <a href="">设置</a>  
-        <span class="product"><a href="">更多产品</a></span>
+    <div class="content_guide">
+        <div class="guide">
+            <a href="<%=session.getAttribute("user") == null ? "/login" : "/modify"%>"><%=session.getAttribute("user") == null ? "请登录" : "欢迎您," + session.getAttribute("name")%></a>  
+            <% if (session.getAttribute("user") != null) {%>
+            <a href="/signout">退出账户</a>
+            <% }%>
+            <a href="<%=session.getAttribute("user") == null ? "/login" : ""%>">我的收藏</a>
+        </div>
     </div>
     <div class="searchbox" align="center">
-        <img class="image1" src="img/baidu.png" height="129" width="270"/>
+        <img class="image1" src="img/title.png" height="129" width="270"/>
         <form action = "/search" onsubmit="return checkName()">
             <input type="text" class="shuru" id = "name" name = "name"/>
-            <input type="submit" class="ok" value="百度一下"  style="cursor: pointer"  >
+            <input type="submit" class="ok" value="比价吧"  style="cursor: pointer"  >
         </form>
     </div>
     

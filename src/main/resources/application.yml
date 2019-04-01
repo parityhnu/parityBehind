@@ -1,5 +1,8 @@
 server:
   port: 9090
+  servlet:
+    session:
+      timeout: 1440m
 spring:
   redis:
     database: 0
@@ -13,7 +16,7 @@ spring:
     password:
   data:
     mongodb:
-      uri: mongodb://localhost/parity
+      uri: mongodb://47.100.108.8/parity
   mvc:
     view:
       prefix: /

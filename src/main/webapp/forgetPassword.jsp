@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8"  language="java" %>
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/x-icon" href="#" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>账户登录</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+
+        input:focus{
+            outline: none;
+        }
+        .form input{
+            width: 300px;
+            height: 30px;
+            font-size: 18px;
+            background: none;
+            border: none;
+            border-bottom: 1px solid rgba(0,0,0,0.40);;
+            color: rgba(0,0,0,0.40);
+            margin-bottom: 20px;
+        }
+        .form input::placeholder{
+            color: rgba(0,0,0,0.40);
+            font-size: 18px;
+            font-family: "neo";
+        }
+        .confirm{
+            height: 51px;
+            overflow: hidden;
+            transition: .25s;
+        }
+        .btn{
+            width:140px;
+            height: 40px;
+            border: 1px solid rgba(0,0,0,0.40);;
+            background: none;
+            font-size:20px;
+            color: rgba(0,0,0,0.40);
+            cursor: pointer;
+            margin-top: 25px;
+            font-family: "neo";
+            transition: .25s;
+        }
+        .btn:hover{
+            background: rgba(255,255,255,.25);
+        }
+        #modify_wrap{
+            width: 980px;
+            min-height: 500px;
+            border-radius: 10px;
+            font-family: "neo";
+            overflow: hidden;
+            box-shadow: 0px 0px 120px rgba(0, 0, 0, 0.25);
+            position: fixed;
+            top: 50%;
+            right: 50%;
+            margin-top: -250px;
+            margin-right: -490px;
+        }
+        #modify{
+            width: 50%;
+            height: 100%;
+            min-height: 500px;
+            background: linear-gradient(to top, #cfd9df 0%, #e2ebf0 100%);
+            position: relative;
+            float: right;
+        }
+        #modify #status{
+            width: 110px;
+            height: 35px;
+            margin: 40px auto;
+            color: rgba(0,0,0,0.40);
+            font-size: 26px;
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+        }
+        #modify #status i{
+            font-style: normal;
+            position: absolute;
+            transition: .5s
+        }
+        #modify span{
+            text-align: center;
+            position: absolute;
+            left: 50%;
+            margin-left: -150px;
+            top: 52%;
+            margin-top: -140px;
+        }
+        #modify span a{
+            text-decoration: none;
+            color: rgba(0,0,0,0.40);
+            display: block;
+            margin-top: 40px;
+            font-size: 18px;
+        }
+        #bg{
+            background: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%);
+            height: 100%;
+        }
+
+        /*提示*/
+        #hint{
+            width: 100%;
+            line-height: 70px;
+            background: linear-gradient(to top, #cfd9df 0%, #e2ebf0 100%);
+            text-align: center;
+            font-size: 25px;
+            color: rgba(0,0,0,0.40);
+            background-blend-mode: multiply,multiply;
+            display: none;
+            opacity: 0;
+            transition: .5s;
+            position: absolute;
+            top: 0;
+            z-index: 999;
+        }
+        /* 响应式 */
+        @media screen and (max-width:2000px ) {
+            #login_img{
+                display: none;
+            }
+            #modify_wrap{
+                width: 490px;
+                margin-right: -245px;
+            }
+            #modify{
+                width: 100%;
+
+            }
+        }
+        @media screen and (max-width:560px ) {
+            #modify_wrap{
+                width: 330px;
+                margin-right: -165px;
+            }
+            #modify span{
+                margin-left: -125px;
+            }
+            .form input{
+                width: 250px;
+            }
+            .btn{
+                width: 113px;
+            }
+        }
+        @media screen and (max-width:345px ) {
+            #modify_wrap {
+                width: 290px;
+                margin-right: -145px;
+            }
+        }
+    </style>
+</head>
+
+<%
+    String href = (String) request.getAttribute("href");
+    if (href == null || "".equals(href)) {
+        href = "/hello";
+    }
+%>
+
+<body>
+<div id="bg">
+    <div id="hint"><!-- 提示框 -->
+        <p></p>
+    </div>
+    <div id="modify_wrap">
+        <div id="modify">
+            <div id="status">
+                <i style="right: 5px">忘记密码</i>
+            </div>
+
+            <span>
+                    <form action="post">
+                        <p class="form"><input type="text" style="color: rgba(0,0,0,0.40)" id="account" placeholder="账户名"></p>
+                        <p class="form"><input type="number" style="color: rgba(0,0,0,0.40)" id="phone" placeholder="绑定的手机号"></p>
+                        <p class="form"><input type="password" style="color: rgba(0,0,0,0.40)" id="passwd" placeholder="修改密码"></p>
+                        <p class="form confirm"><input type="password" style="color: rgba(0,0,0,0.40)" id="confirm_passwd" placeholder="重复确定密码"></p>
+                        <input type="button" value="返回" class="btn" onclick="back()" style="margin-right: 20px;">
+                        <input type="button" value="修改" class="btn" onclick='modify()' id="btn">
+                    </form>
+                </span>
+        </div>
+
+
+    </div>
+</div>
+</body>
+
+
+<script>
+    //引用hint()在最上方弹出提示
+    function hint() {
+        var hit = document.getElementById("hint");
+        hit.style.display = "block";
+        setTimeout(function () {
+            hit.style.opacity = 1;
+        }, 0);
+        setTimeout(function () {
+            hit.style.opacity = 0;
+        }, 2000);
+        setTimeout(function () {
+            hit.style.display = "none";
+        }, 3000);
+    }
+    //回调函数
+    function submit(callback, account, phone, password) {
+        var request = new XMLHttpRequest();
+        var url = "/user/forgetPassword";
+        request.open("post", url, true);
+        var data = new FormData();
+        data.append("account", account);
+        data.append("phone", phone);
+        data.append("password", password);
+        request.onreadystatechange = function() {
+            if (this.readyState == 4) {
+                callback.call(this, this.responseText)
+            }
+        };
+        request.send(data)
+    }
+    //修改按钮
+    function modify() {
+        var hit = document.getElementById("hint").getElementsByTagName("p")[0];
+        hit.innerHTML = "";
+        var account = document.getElementById("account");
+        var passwd = document.getElementById("passwd");
+        var con_pass = document.getElementById("confirm_passwd");
+        var phone = document.getElementById("phone");
+
+        if (account.value != "" && passwd.value != "" && con_pass.value != "" && phone.value != "") {
+            if (passwd.value != con_pass.value) {
+                hit.innerHTML = " 两次密码不相等";
+            } else if (!/((?=.*[a-z])(?=.*\d)|(?=[a-z])(?=.*[#@!~%^&*])|(?=.*\d)(?=.*[#@!~%^&*]))[a-z\d#@!~%^&*]{6,12}/i.test(passwd.value)) {
+                hit.innerHTML = " 密码的长度为6-12，且必须由英文、数字或特殊字符的两种或以上组合";
+            } else if (!/((?=.*[a-z])(?=.*\d)|(?=[a-z])(?=.*[#@!~%^&*])|(?=.*\d)(?=.*[#@!~%^&*]))[a-z\d#@!~%^&*]{6,12}/i.test(con_pass.value)) {
+                hit.innerHTML = " 密码的长度为6-12，且必须由英文、数字或特殊字符的两种或以上组合";
+            } else if (phone.value.length != 11) {
+                hit.innerHTML = "手机号应为11位";
+            } else {
+                submit(function(res) {
+                    if (res === account.value) {
+                        hit.innerHTML = "设置成功";
+                        setTimeout(window.location.href = "<%=href%>", 1000);
+                    } else {
+                        hit.innerHTML = "账户名或者手机号填写错误";
+                    }
+                },account.value, phone.value, passwd.value);
+            }
+        } else {
+            hit.innerHTML = "请输入全部的信息";
+        }
+        hint();
+    }
+
+    //返回按钮
+    function back() {
+        window.location.href = "<%=href%>";
+    }
+
+</script>
+</html>
