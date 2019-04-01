@@ -95,7 +95,7 @@ public class IPController {
         }
 
         if (page == 0) {
-            goodsListModel.setParityGoodsList(findList(name, page, qsort, 0, 0, null, null, GoodsModel.class, "goods_parity"));
+            goodsListModel.setParityGoodsList(findPairty(name, qsort, 0, 0, null, null, GoodsModel.class, "goods_parity"));
         }
         return goodsListModel;
     }
@@ -119,6 +119,23 @@ public class IPController {
         Criteria criteria2 = Criteria.where("sort").is(sort);
         query.addCriteria(criteria);
         query.addCriteria(criteria1);
+        query.addCriteria(criteria2);
+        query.skip(skip);
+        query.limit(limit);
+        if (order != null && sortBy != null) {
+            query.with(new Sort(new Sort.Order(order, sortBy)));
+        }
+        if (collectionName != null && !"".equals(collectionName)) {
+            return mongoTemplate.find(query, clazz, collectionName);
+        }
+        return mongoTemplate.find(query, clazz);
+    }
+
+    private  <T>List<T> findPairty(String keyword, int sort, int skip, int limit, Sort.Direction order, String sortBy, Class<T> clazz, String collectionName) {
+        Query query = new Query();
+        Criteria criteria = Criteria.where("keyword").is(keyword);
+        Criteria criteria2 = Criteria.where("sort").is(sort);
+        query.addCriteria(criteria);
         query.addCriteria(criteria2);
         query.skip(skip);
         query.limit(limit);

@@ -69,11 +69,13 @@
     GoodsListModel goodsListModel =
             HttpService.getGoods(name, index, sort);
     List<GoodsModel> parity = goodsListModel.getParityGoodsList();
-    for (GoodsModel goodsModel : parity) {
-        if (goodsModel == null) {
-            continue;
+    if (parity != null) {
+        for (GoodsModel goodsModel : parity) {
+            if (goodsModel == null) {
+                continue;
+            }
+            goodsModel.setName(goodsModel.getName().substring(0,30));
         }
-        goodsModel.setName(goodsModel.getName().substring(0,30));
     }
 
     List<GoodsModel> goodsList = goodsListModel.getGoodsModelList();
@@ -152,6 +154,9 @@
 
 
             <%
+                if (goodsList == null) {
+                    return;
+                }
                 for(GoodsModel goodsModel : goodsList) {
                     boolean over = false;
                     int sc = goodsModel.getSalecomment();

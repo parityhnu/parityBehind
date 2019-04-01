@@ -78,8 +78,7 @@ public class PageContontroller {
     @RequestMapping("/search")
     public ModelAndView searchTest(@RequestParam(value = "name", required = false) String name,
                                    @RequestParam(value = "page", required = false) String page,
-                                   @RequestParam(value = "sort", required = false) String sort,
-                                   @RequestParam(value = "goodsListModel", required = false)GoodsListModel goodsListModel) {
+                                   @RequestParam(value = "sort", required = false) String sort) {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.addObject("name",name);
         modelAndView.addObject("page",page);
