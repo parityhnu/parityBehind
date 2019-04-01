@@ -5,7 +5,7 @@ import java.util.List;
 public class GoodsListModel {
     private int maxPage;
 
-    private List<GoodsModel> parityGoodsList;
+    private List<ParityModel> parityGoodsList;
 
     private List<GoodsModel> goodsModelList;
 
@@ -18,11 +18,11 @@ public class GoodsListModel {
         this.maxPage = maxPage;
     }
 
-    public List<GoodsModel> getParityGoodsList() {
+    public List<ParityModel> getParityGoodsList() {
         return parityGoodsList;
     }
 
-    public void setParityGoodsList(List<GoodsModel> parityGoodsList) {
+    public void setParityGoodsList(List<ParityModel> parityGoodsList) {
         this.parityGoodsList = parityGoodsList;
     }
 

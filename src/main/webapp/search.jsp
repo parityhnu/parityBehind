@@ -4,7 +4,8 @@
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="java.util.Collections" %>
 <%@ page import="java.util.Comparator" %>
-<%@ page import="java.util.List" %><%--
+<%@ page import="java.util.List" %>
+<%@ page import="com.binqing.parity.Model.ParityModel" %><%--
 =======
 <%@ page import="java.util.List" %>
 <%--
@@ -68,14 +69,14 @@
     }
     GoodsListModel goodsListModel =
             HttpService.getGoods(name, index, sort);
-    List<GoodsModel> parity = goodsListModel.getParityGoodsList();
+    List<ParityModel> parity = goodsListModel.getParityGoodsList();
     if (parity != null) {
-        for (GoodsModel goodsModel : parity) {
-            if (goodsModel == null) {
+        for (ParityModel parityModel : parity) {
+            if (parityModel == null) {
                 continue;
             }
-            if (goodsModel.getName().length()>30) {
-                goodsModel.setName(goodsModel.getName().substring(0,30));
+            if (parityModel.getName().length()>30) {
+                parityModel.setName(parityModel.getName().substring(0,30));
             }
 
         }
@@ -124,33 +125,45 @@
             </div>
 
             <% if (parity != null && !parity.isEmpty()) {%>
-            <p class="tip_product_detail">快速查看产品详情</p>
-            <div class="parity_goods">
-                <div class="item_parity_goods">
-                    <div class="pic">
-                        <a  target="_blank" href="" >
-                            <p style="text-align: center">
-                                <img  class="product" data-img="1"
-                                      src="<%=parity.get(0).getImage()%>" />
-                            </p>
+                <p class="tip_product_detail">快速查看产品详情</p>
+                <div class="parity_goods">
+            <%  int i = 0;
+                for (ParityModel parityModel : parity) {
+                    if (parityModel == null) {
+                        continue;
+                    }
+                    if (i%2 == 0) {  %>
+                        <div class="item_parity_goods">
+                            <div class="pic">
+                                <a  target="_blank" href="" >
+                                    <p style="text-align: center">
+                                        <img  class="product" data-img="1"
+                                              src="<%=parityModel.getImage()%>" />
+                                    </p>
 
-                        </a>
-                    </div>
+                                </a>
+                            </div>
 
-                    <div class = "title">
-                        <a class="title" style="font-size: 14px"  target="_blank" href="" >
-                            <%=parity.get(0).getName()%>
-                        </a>
-                    </div>
+                            <div class = "title">
+                                <a class="title" style="font-size: 14px"  target="_blank" href="" >
+                                    <%=parityModel.getName()%>
+                                </a>
+                            </div>
 
-                    <div class= "price">
-                        <p style="color: #cc0000;font-size:16px;font-weight: bold">￥<%=parity.get(0).getPrice()%></p>
-                    </div>
+                            <div class= "price">
+                                <p style="color: #cc0000;font-size:16px;font-weight: bold">￥<%=parityModel.getPrice()%></p>
+                            </div>
 
-                    <p class="count" style="color : #7b7b7b;font-size:13px;"><%=parity.size()%>个商城比价</p>
+                            <p class="count" style="color : #7b7b7b;font-size:13px;"><%="2"%>个商城比价</p>
+                        </div>
+
+            <%
+                    }
+                    i++;
+                }
+            %>
                 </div>
 
-            </div>
             <%}%>
 
             <div style="margin-top:4px;height:1px;width:auto;border-top:1px solid #ccc;"></div>

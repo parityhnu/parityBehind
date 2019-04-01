@@ -4,6 +4,7 @@ import com.binqing.parity.Consts.TimeConsts;
 import com.binqing.parity.Enum.SortType;
 import com.binqing.parity.Model.GoodsListModel;
 import com.binqing.parity.Model.GoodsModel;
+import com.binqing.parity.Model.ParityModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -95,7 +96,8 @@ public class IPController {
         }
 
         if (page == 0) {
-            goodsListModel.setParityGoodsList(findPairty(name, qsort, 0, 0, null, null, GoodsModel.class, "goods_parity"));
+            goodsListModel.setParityGoodsList(findPairty(name, qsort, 0, 10, Sort.Direction.ASC, "distance",
+                        Sort.Direction.ASC, "order",ParityModel.class));
         }
         return goodsListModel;
     }
@@ -131,7 +133,8 @@ public class IPController {
         return mongoTemplate.find(query, clazz);
     }
 
-    private  <T>List<T> findPairty(String keyword, int sort, int skip, int limit, Sort.Direction order, String sortBy, Class<T> clazz, String collectionName) {
+    private  <T>List<T> findPairty(String keyword, int sort, int skip, int limit, Sort.Direction order, String sortBy
+            , Sort.Direction order2, String sortBy2, Class<T> clazz) {
         Query query = new Query();
         Criteria criteria = Criteria.where("keyword").is(keyword);
         Criteria criteria2 = Criteria.where("sort").is(sort);
@@ -140,10 +143,7 @@ public class IPController {
         query.skip(skip);
         query.limit(limit);
         if (order != null && sortBy != null) {
-            query.with(new Sort(new Sort.Order(order, sortBy)));
-        }
-        if (collectionName != null && !"".equals(collectionName)) {
-            return mongoTemplate.find(query, clazz, collectionName);
+            query.with(new Sort(new Sort.Order(order, sortBy), new Sort.Order(order2,sortBy2)));
         }
         return mongoTemplate.find(query, clazz);
     }
