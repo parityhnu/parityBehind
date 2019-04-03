@@ -75,8 +75,8 @@
             if (parityModel == null) {
                 continue;
             }
-            if (parityModel.getName().length()>30) {
-                parityModel.setName(parityModel.getName().substring(0,30));
+            if (parityModel.getName().length()>38) {
+                parityModel.setName(parityModel.getName().substring(0,38) + "...");
             }
 
         }
@@ -226,10 +226,12 @@
 
         <div class = "nav_tab">
             <% if (!"0".equals(index)) {%>
+            <a class="nav_first" href="<%="/search?name="+name+"&page=0&sort="+sort%>">首页</a>
             <a class="nav_before" href="<%="/search?name="+name+"&page="+(Integer.parseInt(index)-1)+"&sort="+sort%>">上一页</a>
             <%}%>
             <p class="current">当前第<%=Integer.parseInt(index)+1%>页</p>
             <a class="nav_after" href="<%="/search?name="+name+"&page="+(Integer.parseInt(index)+1)+"&sort="+sort%>">下一页</a>
+            <p class="count">共<%=goodsListModel.getMaxPage()%>页</p>
         </div>
 
     </div>

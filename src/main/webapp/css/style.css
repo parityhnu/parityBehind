@@ -184,12 +184,18 @@
     margin: auto;
     left: 0;
     right: 0;
-    width: 250px;
+    width: 350px;
     height: 100px;
+}
+
+.all .container .nav_tab .nav_first {
+    margin-top: 16px;
+    float: left;
 }
 
 .all .container .nav_tab .nav_before {
     margin-top: 16px;
+    margin-left: 16px;
     float: left;
 }
 
@@ -200,6 +206,12 @@
 }
 
 .all .container .nav_tab .nav_after {
+    margin-top: 16px;
+    margin-left: 16px;
+    float: left;
+}
+
+.all .container .nav_tab .count {
     margin-top: 16px;
     margin-left: 16px;
     float: left;
