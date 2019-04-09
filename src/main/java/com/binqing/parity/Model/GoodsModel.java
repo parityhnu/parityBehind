@@ -26,6 +26,8 @@ public class GoodsModel {
 
     private int type;
 
+    private String id;
+
     public String getName() {
         return name;
     }
@@ -112,5 +114,13 @@ public class GoodsModel {
 
     public void setType(int type) {
         this.type = type;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }
