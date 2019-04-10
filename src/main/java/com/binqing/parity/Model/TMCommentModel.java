@@ -4,7 +4,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
-@Document(value = "comments_tm")
+@Document(collection = "comments_tm")
 public class TMCommentModel extends BaseCommentModel{
 
     private String auctionSku;

@@ -2,7 +2,7 @@ package com.binqing.parity.Model;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(value = "comments_jd")
+@Document(collection = "comments_jd")
 public class JDCommentModel extends BaseCommentModel{
     private String productSize;
 

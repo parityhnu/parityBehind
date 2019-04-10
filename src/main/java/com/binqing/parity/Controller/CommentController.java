@@ -76,7 +76,7 @@ public class CommentController {
 
     private <T> List<T> findList(String id, int skip, int limit, Sort.Direction order, String sortBy, Class<T> clazz, String collectionName) {
         Query query = new Query();
-        Criteria criteria = Criteria.where("id").is(id);
+        Criteria criteria = Criteria.where("gid").is(id);
         query.addCriteria(criteria);
         query.skip(skip);
         query.limit(limit);

@@ -3,7 +3,7 @@ package com.binqing.parity.Model;
 import java.util.List;
 
 public class BaseCommentModel implements Comparable<BaseCommentModel> {
-    private String id;
+    private String gid;
 
     private int index;
 
@@ -17,19 +17,19 @@ public class BaseCommentModel implements Comparable<BaseCommentModel> {
 
     private String content;
 
-    public String getId() {
+    public String getGid() {
         if (this instanceof JDCommentModel) {
-            return "jd:" + id;
+            return "jd:" + gid;
         } else if (this instanceof TBCommentModel) {
-            return "tb:" + id;
+            return "tb:" + gid;
         } else if (this instanceof TMCommentModel) {
-            return "tm:" + id;
+            return "tm:" + gid;
         }
-        return id;
+        return gid;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setGid(String gid) {
+        this.gid = gid;
     }
 
     public int getIndex() {
