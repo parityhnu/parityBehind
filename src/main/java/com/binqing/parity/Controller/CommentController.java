@@ -1,6 +1,7 @@
 package com.binqing.parity.Controller;
 
 import com.binqing.parity.Model.*;
+import com.binqing.parity.Service.HttpService;
 import org.apache.http.util.TextUtils;
 import org.attoparser.util.TextUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,13 +23,38 @@ import java.util.List;
 @RequestMapping("/comment")
 public class CommentController {
 
+    private static final int COMMENT_PAGE_SIZE = 8;
+
     @Autowired
     MongoTemplate mongoTemplate;
 
+    @GetMapping("/test")
+    public CommentReturnModel test() {
+        List<String> ids = new ArrayList<>();
+        ids.add("tb:587861043551");
+        CommentReturnModel list = HttpService.getComments(ids, "1");
+        return list;
+    }
+
+    @GetMapping("/test2")
+    public CommentReturnModel test2() {
+        List<String> ids = new ArrayList<>();
+        ids.add("tb:587861043551");
+        return get(ids, "1");
+    }
+
     @GetMapping("/get")
-    public List<BaseCommentModel> get(@RequestParam (required = false) List<String> ids) {
+    public CommentReturnModel get(@RequestParam (required = false) List<String> ids, @RequestParam(required = false) String index) {
         if (ids == null || ids.isEmpty()) {
             return null;
+        }
+        if (index == null || TextUtils.isEmpty(index)) {
+            index = "1";
+        }
+        int page = Integer.parseInt(index);
+        //最小值为1
+        if (page < 1) {
+            page = 1;
         }
         List<BaseCommentModel> result = new ArrayList<>();
         for (String id : ids) {
@@ -59,7 +85,37 @@ public class CommentController {
             }
         }
         Collections.sort(result);
-        return result;
+        int size = result.size();
+        int maxPgae = size / COMMENT_PAGE_SIZE;
+        if (maxPgae * COMMENT_PAGE_SIZE > size) {
+            maxPgae += 1;
+        }
+        List<BaseCommentModel> finalList;
+        if (page >= maxPgae) {
+            page = maxPgae;
+            finalList = result.subList((page - 1) * COMMENT_PAGE_SIZE, size);
+        } else {
+            finalList = result.subList((page - 1) * COMMENT_PAGE_SIZE, page * COMMENT_PAGE_SIZE);
+        }
+        //以下一步过滤的目的是，因为经过HttpService之后会过滤掉子类的一些属性
+        List<JDCommentModel> jdCommentModels = new ArrayList<>();
+        List<TBCommentModel> tbCommentModels = new ArrayList<>();
+        List<TMCommentModel> tmCommentModels = new ArrayList<>();
+        for (BaseCommentModel baseCommentModel : finalList) {
+            if (baseCommentModel instanceof JDCommentModel) {
+                jdCommentModels.add((JDCommentModel) baseCommentModel);
+            } else if (baseCommentModel instanceof TMCommentModel) {
+                tmCommentModels.add((TMCommentModel) baseCommentModel);
+            } else if (baseCommentModel instanceof TBCommentModel) {
+                tbCommentModels.add((TBCommentModel) baseCommentModel);
+            }
+        }
+        CommentReturnModel returnModel = new CommentReturnModel();
+        returnModel.setMaxPage(maxPgae);
+        returnModel.setJdCommentModels(jdCommentModels);
+        returnModel.setTbCommentModels(tbCommentModels);
+        returnModel.setTmCommentModels(tmCommentModels);
+        return returnModel;
     }
 
     private <T> List<T> findList(String id, Class<T> clazz) {

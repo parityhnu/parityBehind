@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.List;
 
 @Controller
 public class PageContontroller {
@@ -72,6 +73,16 @@ public class PageContontroller {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.addObject("href",href);
         modelAndView.setViewName("forgetPassword");
+        return modelAndView;
+    }
+
+    @RequestMapping("/detail")
+    public ModelAndView detail(@RequestParam(value = "ids", required = false) List<String> ids,
+                               @RequestParam(value = "index", required = false) String index) {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.addObject("ids", ids);
+        modelAndView.addObject("index", index);
+        modelAndView.setViewName("detail");
         return modelAndView;
     }
 
