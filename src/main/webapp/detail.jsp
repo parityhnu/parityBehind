@@ -338,7 +338,7 @@
                         <%if (!String.valueOf(maxPage).equals(index)) {%>
                         <a href=<%=url_noindex + "&index=" + String.valueOf(Integer.parseInt(index) + 1)%>>下一页</a>
                         <%} else {%>
-                        <font style="font-size: 16px">下一页</font>
+                        <a href="javascript:return false;">下一页 </a>
                         <%}%>
                     </td>
                 </tr>
@@ -369,20 +369,31 @@
             var divs = pics[i].getElementsByClassName("pic");
             var ld = divs.length;
             let father = pics[i];
+            let checkdivs = divs;
             for (var j = 0; j < ld; j++) {
                 divs[j].onclick = function () {
                     var img = this.getElementsByClassName("pic_img")[0];
                     if (img.name == undefined || "" == img.name || "close" == img.name) {
                         img.name = "on";
-                        console.log(father);
                         father.style.height = img.naturalHeight;
                         img.style.height = img.naturalHeight;
                         img.style.width = img.naturalWidth;
                     } else {
                         img.name = "close";
-                        father.style.height = 48 + "px";
+                        var lc = checkdivs.length;
+                        var close = true;
+                        for (s=0;s<lc;s++) {
+                            var checkimg = checkdivs[s].getElementsByClassName("pic_img")[0];
+                            if (checkimg.name == "on") {
+                                close = false;
+                                break;
+                            }
+                        }
                         img.style.height = 48 + "px";
                         img.style.width = 48 + "px";
+                        if (close == true) {
+                            father.style.height = 48 + "px";
+                        }
                     }
                 }
             }

@@ -18,13 +18,6 @@ public class BaseCommentModel implements Comparable<BaseCommentModel> {
     private String content;
 
     public String getGid() {
-        if (this instanceof JDCommentModel) {
-            return "jd:" + gid;
-        } else if (this instanceof TBCommentModel) {
-            return "tb:" + gid;
-        } else if (this instanceof TMCommentModel) {
-            return "tm:" + gid;
-        }
         return gid;
     }
 
