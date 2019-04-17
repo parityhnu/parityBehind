@@ -290,6 +290,12 @@ public class UserController {
                 || keyword == null || "".equals(keyword) || sort == null || "".equals(sort)) {
             return null;
         }
+        try {
+            id1 = id1.split(":")[1];
+            id2 = id2.split(":")[1];
+        } catch (Exception e) {
+            return null;
+        }
         String sql;
         if (cancel) {
             sql = "delete from favorite where uid = ? and id1 = ? and id2 = ? and keyword = ? and sort = ?;";
