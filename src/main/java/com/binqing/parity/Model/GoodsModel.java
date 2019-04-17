@@ -26,7 +26,7 @@ public class GoodsModel {
 
     private int type;
 
-    private String id;
+    private String gid;
 
     public String getName() {
         return name;
@@ -116,18 +116,18 @@ public class GoodsModel {
         this.type = type;
     }
 
-    public String getId() {
+    public String getGid() {
         if (type == 0) {
-            return "jd:" + id;
+            return "jd:" + gid;
         } else if (type == 1) {
-            return "tb:" + id;
+            return "tb:" + gid;
         } else if (type == 2) {
-            return "tm:" + id;
+            return "tm:" + gid;
         }
-        return id;
+        return gid;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setGid(String gid) {
+        this.gid = gid;
     }
 }

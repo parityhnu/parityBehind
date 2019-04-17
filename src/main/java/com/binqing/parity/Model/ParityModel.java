@@ -30,6 +30,8 @@ public class ParityModel {
 
     private int order;
 
+    private String gid;
+
     public String getName() {
         return name;
     }
@@ -132,5 +134,13 @@ public class ParityModel {
 
     public void setOrder(int order) {
         this.order = order;
+    }
+
+    public String getGid() {
+        return gid;
+    }
+
+    public void setGid(String gid) {
+        this.gid = gid;
     }
 }

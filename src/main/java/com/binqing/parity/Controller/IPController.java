@@ -11,12 +11,15 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
@@ -29,6 +32,9 @@ public class IPController {
 
     @Autowired
     MongoTemplate mongoTemplate;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     private static final String REDIS_URL = "redis_url_once";
 
@@ -102,6 +108,38 @@ public class IPController {
         return goodsListModel;
     }
 
+    @GetMapping("getFavorite")
+    public List<ParityModel> getFavorite(@RequestParam String user) {
+        if (user == null || "".equals(user)) {
+            return null;
+        }
+        List<ParityModel> result = new ArrayList<>();
+        String sql = "select id1, id2, keyword from favorite where uid = ?";
+        List<Map<String, Object>> maps = jdbcTemplate.queryForList(sql);
+        for (Map<String, Object> map : maps) {
+            if (map == null) {
+                continue;
+            }
+            String id1 = (String) map.get("id1");
+            String id2 = (String) map.get("id2");
+            String keyword = (String) map.get("keyword");
+            String sort = (String) map.get("sort");
+
+            result.addAll(findPairty(id1, 0, 0, null, null, null, null, ParityModel.class));
+            result.addAll(findPairty(id2, 0, 0, null, null, null, null, ParityModel.class));
+            String code = new StringBuilder(keyword).append("urlurlurlaaaaa").append(sort).toString();
+            String time = stringRedisTemplate.opsForValue().get(code);
+            long currentTime = System.currentTimeMillis();
+            long saveTime = currentTime - currentTime % TimeConsts.MILLS_OF_ONE_HOUR;
+            if (time == null || (time != null && saveTime - Long.parseLong(time) > TimeConsts.MILLS_OF_ONE_DAY)) {
+                stringRedisTemplate.opsForValue().set(code, String.valueOf(saveTime));
+                stringRedisTemplate.opsForList().leftPush(REDIS_URL, new StringBuilder(keyword).append("_").append(sort).toString());
+            }
+        }
+        return result;
+    }
+
+
     private  <T>List<T> findList(String keyword, int page, int sort, Class<T> clazz) {
         return findList(keyword, page, sort, 0, 0, clazz);
     }
@@ -132,6 +170,20 @@ public class IPController {
         }
         return mongoTemplate.find(query, clazz);
     }
+
+    private  <T>List<T> findPairty(String gid, int skip, int limit, Sort.Direction order, String sortBy
+            , Sort.Direction order2, String sortBy2, Class<T> clazz) {
+        Query query = new Query();
+        Criteria criteria = Criteria.where("gid").is(gid);
+        query.addCriteria(criteria);
+        query.skip(skip);
+        query.limit(limit);
+        if (order != null && sortBy != null) {
+            query.with(new Sort(new Sort.Order(order, sortBy), new Sort.Order(order2,sortBy2)));
+        }
+        return mongoTemplate.find(query, clazz);
+    }
+
 
     private  <T>List<T> findPairty(String keyword, int sort, int skip, int limit, Sort.Direction order, String sortBy
             , Sort.Direction order2, String sortBy2, Class<T> clazz) {
