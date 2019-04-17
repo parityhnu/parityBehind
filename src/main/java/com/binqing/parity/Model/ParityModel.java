@@ -2,8 +2,8 @@ package com.binqing.parity.Model;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "goods")
-public class GoodsModel {
+@Document(collection = "goods_parity")
+public class ParityModel {
     private String name;
 
     private String price;
@@ -25,6 +25,10 @@ public class GoodsModel {
     private double score;
 
     private int type;
+
+    private int distance;
+
+    private int order;
 
     private String gid;
 
@@ -116,14 +120,23 @@ public class GoodsModel {
         this.type = type;
     }
 
+    public int getDistance() {
+        return distance;
+    }
+
+    public void setDistance(int distance) {
+        this.distance = distance;
+    }
+
+    public int getOrder() {
+        return order;
+    }
+
+    public void setOrder(int order) {
+        this.order = order;
+    }
+
     public String getGid() {
-        if (type == 0) {
-            return "jd:" + gid;
-        } else if (type == 1) {
-            return "tb:" + gid;
-        } else if (type == 2) {
-            return "tm:" + gid;
-        }
         return gid;
     }
 
