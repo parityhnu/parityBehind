@@ -198,9 +198,9 @@
                     </font></div>
                     <div class="shop"><font style="color: #AAA"><%=shop%>
                     </font></div>
-                    <%--<% if (commentModel instanceof JDCommentModel) { %>--%>
+                    <% if (commentModel instanceof JDCommentModel) { %>
                     <div class="comment-star"></div>
-                    <%--<% }%>--%>
+                    <% }%>
                 </div>
 
                 <div class="comment">

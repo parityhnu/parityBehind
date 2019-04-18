@@ -172,10 +172,15 @@
                         if (parityModels == null || parityModels.isEmpty()) {
                             continue;
                         }
+                        StringBuilder ids = new StringBuilder();
+                        for (ParityModel parityModel : parityModels) {
+                            ids.append(parityModel.getTypeGid()).append(",");
+                        }
+                        ids.deleteCharAt(ids.length()-1);
                 %>
                 <div class="item_parity_goods">
                     <div class="pic">
-                        <a target="_blank" href="">
+                        <a target="_blank" href="/detail?ids=<%=ids.toString()%>">
                             <p style="text-align: center">
                                 <img class="product" data-img="1"
                                      src="<%=parityModels.size() == 2 ? parityModels.get(1).getImage() : parityModels.get(0).getImage()%>"/>
@@ -185,7 +190,7 @@
                     </div>
 
                     <div class="title">
-                        <a class="title" style="font-size: 14px" target="_blank" href="">
+                        <a class="title" style="font-size: 14px" target="_blank" href="/detail?ids=<%=ids.toString()%>"">
                             <%=parityModels.size() == 2 ? parityModels.get(1).getName() : parityModels.get(0).getName()%>
                         </a>
                     </div>

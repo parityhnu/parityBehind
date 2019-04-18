@@ -140,6 +140,17 @@ public class ParityModel {
         return gid;
     }
 
+    public String getTypeGid() {
+        if (type == 0) {
+            return "jd:" + gid;
+        } else if (type == 1) {
+            return "tb:" + gid;
+        } else if (type == 2) {
+            return "tm:" + gid;
+        }
+        return gid;
+    }
+
     public void setGid(String gid) {
         this.gid = gid;
     }

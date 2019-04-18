@@ -117,13 +117,7 @@ public class GoodsModel {
     }
 
     public String getGid() {
-        if (type == 0) {
-            return "jd:" + gid;
-        } else if (type == 1) {
-            return "tb:" + gid;
-        } else if (type == 2) {
-            return "tm:" + gid;
-        }
+
         return gid;
     }
 
