@@ -1,0 +1,185 @@
+.all .guide a{
+    font-size: smaller ;
+    font-weight:bold ;
+}
+
+.all .guide a:link, .all .guide a:active{
+    color: black;
+}
+
+.all{
+    width: 100%;
+}
+
+.all .content_guide{
+    height: 25px;
+    -webkit-box-shadow: #E0E0E0 0px 0px 1px;
+    -moz-box-shadow: #E0E0E0 0px 0px 1px;
+    box-shadow: #E0E0E0 0px 0px 1px;
+}
+
+.all .content_guide .guide{
+    position: absolute;
+    top: 0;
+    right: 30px;
+}
+
+.all .search_content{
+    -webkit-box-shadow: #E0E0E0 0px 0px 1px;
+    -moz-box-shadow: #E0E0E0 0px 0px 1px;
+    box-shadow: #E0E0E0 0px 0px 1px;
+    height: 150px;
+    position: relative;
+    top:2px;
+}
+
+.all .search_content .searchbox{
+    height:130px;
+    width: 850px;
+    position: relative;
+    margin: auto;
+    top: 0;
+    left: 0;
+    right: 0;
+}
+
+.all .search_content .searchbox .image1{
+    position: absolute;
+    left: 0
+}
+
+.all .search_content .searchbox .shuru{
+    width: 439px;
+    height: 36px;
+    position: absolute;
+    left:300px;
+    top:40%;
+}
+
+.all .search_content .searchbox .ok{
+    width: 100px;
+    height: 36px;
+    color: white;
+    background: #b20a2c;
+    border: 0;
+    font-size:medium;
+    position: absolute;
+    left: 741px;
+    top:40%;
+    text-align:center
+}
+
+.all .container{
+    background: #EFEFEF;
+    position: relative;
+    top:  2px;
+    padding-top: 40px;
+}
+
+.all .container .item_content {
+    background: #FFFFFF;
+    height: auto;
+    width: 1000px;
+    position: relative;
+    margin: auto;
+    left: 0;
+    right: 0;
+}
+
+
+.all .container .item_content .item_comment
+{
+    position: relative;
+    margin-top: 10px;
+    overflow:hidden;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.all .container .item_content .item_comment .user {
+    width: 150px;
+    float: left;
+}
+
+.all .container .item_content .item_comment .user .nick {
+    margin-top: 8px;
+}
+
+.all .container .item_content .item_comment .user .shop {
+    margin-top: 8px;
+}
+
+.all .container .item_content .item_comment .user .comment-star {
+    margin-top: 8px;
+    width: 78px;
+    height: 14px;
+    background: url(//static.360buyimg.com/item/unite/1.0.71/components/default/comment/i/star.png) no-repeat;
+}
+
+.all .container .item_content .item_comment .comment {
+    width: 810px;
+    float: left;
+    padding-bottom: 16px;
+}
+
+.all .container .item_content .item_comment .comment .rateContent {
+    width: 100%;
+    margin-top: 8px;
+}
+
+.all .container .item_content .item_comment .comment .pics {
+    width: 100%;
+    margin-top: 8px;
+    height: 48px;
+}
+
+.all .container .item_content .item_comment .comment .pics .pic {
+    margin-left: 8px;
+    float: left;
+}
+
+.all .container .item_content .item_comment .comment .pics .pic .pic_img {
+    width: 48px;
+    height: 48px;
+}
+
+.all .container .item_content .item_comment .comment .timeandsku {
+    width: 100%;
+    height: 20px;
+    margin-top: 8px;
+}
+
+.all .container .item_content .item_comment .comment .attend {
+    width: 100%;
+    margin-top: 8px;
+}
+
+.all .container .item_content .item_comment .comment .attend .attend_content {
+    width: 100%;
+    margin-top: 8px;
+}
+
+.all .container .item_content .item_comment .comment .attend .pics {
+    width: 100%;
+    margin-top: 8px;
+    height: 48px;
+}
+
+.all .container .item_content .item_comment .comment .attend .pics .pic {
+    margin-left: 8px;
+    float: left;
+}
+
+.all .container .item_content .item_comment .comment .attend .pics .pic .pic_img {
+    width: 48px;
+    height: 48px;
+}
+
+.all .container  .nav_tab {
+    position: relative;
+    margin: auto;
+    left: 0;
+    right: 0;
+    width: 450px;
+    height: 100px;
+}

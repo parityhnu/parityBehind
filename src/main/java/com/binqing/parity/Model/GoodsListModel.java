@@ -3,43 +3,34 @@ package com.binqing.parity.Model;
 import java.util.List;
 
 public class GoodsListModel {
-    private JDModel parityJdModel;
+    private int maxPage;
 
-    private TBModel parityTbModel;
+    private List<ParityModel> parityGoodsList;
 
-    private List<JDModel> jdModelList;
+    private List<GoodsModel> goodsModelList;
 
-    private List<TBModel> tbModelList;
 
-    public JDModel getParityJdModel() {
-        return parityJdModel;
+    public int getMaxPage() {
+        return maxPage;
     }
 
-    public void setParityJdModel(JDModel parityJdModel) {
-        this.parityJdModel = parityJdModel;
+    public void setMaxPage(int maxPage) {
+        this.maxPage = maxPage;
     }
 
-    public TBModel getParityTbModel() {
-        return parityTbModel;
+    public List<ParityModel> getParityGoodsList() {
+        return parityGoodsList;
     }
 
-    public void setParityTbModel(TBModel parityTbModel) {
-        this.parityTbModel = parityTbModel;
+    public void setParityGoodsList(List<ParityModel> parityGoodsList) {
+        this.parityGoodsList = parityGoodsList;
     }
 
-    public List<JDModel> getJdModelList() {
-        return jdModelList;
+    public List<GoodsModel> getGoodsModelList() {
+        return goodsModelList;
     }
 
-    public void setJdModelList(List<JDModel> jdModelList) {
-        this.jdModelList = jdModelList;
-    }
-
-    public List<TBModel> getTbModelList() {
-        return tbModelList;
-    }
-
-    public void setTbModelList(List<TBModel> tbModelList) {
-        this.tbModelList = tbModelList;
+    public void setGoodsModelList(List<GoodsModel> goodsModelList) {
+        this.goodsModelList = goodsModelList;
     }
 }
