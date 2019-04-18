@@ -89,14 +89,28 @@
     String url_default = url_prensent.toString();
     CommentReturnModel returnModel =
             HttpService.getComments(ids, index);
+    System.out.println(returnModel.getMaxPage());
     int maxPage = returnModel.getMaxPage();
+    if (Integer.parseInt(index) > maxPage) {
+        if (maxPage == 0) {
+            index = "1";
+        } else {
+            index = String.valueOf(maxPage);
+        }
+    }
     List<BaseCommentModel> commentModelList = new ArrayList<>();
     List<JDCommentModel> jdCommentModels = returnModel.getJdCommentModels();
     List<TBCommentModel> tbCommentModels = returnModel.getTbCommentModels();
     List<TMCommentModel> tmCommentModels = returnModel.getTmCommentModels();
-    commentModelList.addAll(jdCommentModels);
-    commentModelList.addAll(tbCommentModels);
-    commentModelList.addAll(tmCommentModels);
+    if (jdCommentModels != null && !jdCommentModels.isEmpty()) {
+        commentModelList.addAll(jdCommentModels);
+    }
+    if (tbCommentModels != null && !tbCommentModels.isEmpty()) {
+        commentModelList.addAll(tbCommentModels);
+    }
+    if (tmCommentModels != null && !tmCommentModels.isEmpty()) {
+        commentModelList.addAll(tmCommentModels);
+    }
     Collections.sort(commentModelList);
 
 %>
@@ -276,13 +290,15 @@
 
 
                         <%if (Integer.parseInt(index) - 4 < 0) {%>
-                        <a class="nav1" href=<%=url_noindex + "&index=1"%>>1</a>
-                        <a class="nav2" href=<%=url_noindex + "&index=2"%>>2</a>
-                        <a class="nav3" href=<%=url_noindex + "&index=3"%>>3</a>
-                        <a class="nav4" href=<%=url_noindex + "&index=4"%>>4</a>
-                        <a class="nav5" href=<%=url_noindex + "&index=5"%>>5</a>
+
                         <%
-                            if (maxPage > 5) {
+                            if (maxPage > 5) { %>
+                            <a class="nav1" href=<%=url_noindex + "&index=1"%>>1</a>
+                            <a class="nav2" href=<%=url_noindex + "&index=2"%>>2</a>
+                            <a class="nav3" href=<%=url_noindex + "&index=3"%>>3</a>
+                            <a class="nav4" href=<%=url_noindex + "&index=4"%>>4</a>
+                            <a class="nav5" href=<%=url_noindex + "&index=5"%>>5</a>
+                        <%
                                 if (maxPage == 6) {
                         %>
                         <a class="nav6" href=<%=url_noindex + "&index=6"%>>6</a>
@@ -293,6 +309,11 @@
                         <a class=<%="nav" + maxPage%> href=<%=url_noindex + "&index=" + maxPage%>><%=maxPage%>
                         </a>
                         <%
+                                }
+                            } else {
+                                for (int i = 1; i<=maxPage; i ++) { %>
+                                 <a class="nav<%=i%>" href=<%=url_noindex + "&index=" + i%>>i</a>
+                                    <%
                                 }
                             }
                         } else {
@@ -335,7 +356,7 @@
                         }%>
 
 
-                        <%if (!String.valueOf(maxPage).equals(index)) {%>
+                        <%if (maxPage> Integer.parseInt(index)) {%>
                         <a href=<%=url_noindex + "&index=" + String.valueOf(Integer.parseInt(index) + 1)%>>下一页</a>
                         <%} else {%>
                         <a href="javascript:return false;">下一页 </a>

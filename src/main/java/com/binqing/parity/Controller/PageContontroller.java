@@ -81,6 +81,9 @@ public class PageContontroller {
                                @RequestParam(value = "index", required = false) String index) {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.addObject("ids", ids);
+        if (index == null || "".equals(index)) {
+            index = "1";
+        }
         modelAndView.addObject("index", index);
         modelAndView.setViewName("detail");
         return modelAndView;

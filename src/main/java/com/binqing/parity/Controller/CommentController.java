@@ -84,10 +84,13 @@ public class CommentController {
                     break;
             }
         }
-        Collections.sort(result);
         int size = result.size();
+        if (size == 0) {
+            return new CommentReturnModel();
+        }
+        Collections.sort(result);
         int maxPgae = size / COMMENT_PAGE_SIZE;
-        if (maxPgae * COMMENT_PAGE_SIZE > size) {
+        if (maxPgae * COMMENT_PAGE_SIZE < size) {
             maxPgae += 1;
         }
         List<BaseCommentModel> finalList;

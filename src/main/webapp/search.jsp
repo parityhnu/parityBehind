@@ -102,13 +102,23 @@
 
     List<GoodsModel> goodsList = goodsListModel.getGoodsModelList();
     String url_noindex = "/search?name=" + name + "&sort=" + sort + "&page=";
-    int maxPage = goodsListModel.getMaxPage() + 1;
 
     String url_default = "/search?name=" + name + "&page=" + index + "&sort=0";
     String url_sale_comment = "/search?name=" + name + "&page=" + index + "&sort=1";
     String url_price_asc = "/search?name=" + name + "&page=" + index + "&sort=2";
     String url_price_desc = "/search?name=" + name + "&page=" + index + "&sort=3";
+    int maxPage = goodsListModel.getMaxPage() + 1;
+    if (goodsListModel.getMaxPage() == 0) {
+        maxPage = 0;
+    }
     int index3 = Integer.parseInt(index) + 1;
+    if (index3 > maxPage) {
+        if (maxPage == 0) {
+            index3 = 1;
+        } else {
+            index3 = maxPage;
+        }
+    }
 %>
 <div class="all">
     <div class="content_guide">
@@ -272,13 +282,16 @@
 
 
                         <%if (index3 - 4 < 0) {%>
+
+                        <%
+                            if (maxPage > 5) { %>
                         <a class="nav1" href=<%=url_noindex + "0"%>>1</a>
                         <a class="nav2" href=<%=url_noindex + "1"%>>2</a>
                         <a class="nav3" href=<%=url_noindex + "2"%>>3</a>
                         <a class="nav4" href=<%=url_noindex + "3"%>>4</a>
                         <a class="nav5" href=<%=url_noindex + "4"%>>5</a>
+
                         <%
-                            if (maxPage > 5) {
                                 if (maxPage == 6) {
                         %>
                         <a class="nav6" href=<%=url_noindex + "5"%>>6</a>
@@ -290,7 +303,11 @@
                         </a>
                         <%
                                 }
-                            }
+                            } else {
+                                for(int i=1;i<=maxPage;i++) {%>
+                        <a class=<%="nav" + i%> href=<%=url_noindex + i%>><%=i%>
+
+                                <%}}
                         } else {
 //                            在中间，需要首页和尾页
                             //首页
@@ -328,7 +345,7 @@
                         }%>
 
 
-                        <%if (!(maxPage == index3)) {%>
+                        <%if (maxPage > index3) {%>
                         <a href=<%=url_noindex + (index3)%>>下一页</a>
                         <%} else {%>
                         <a href="javascript:return false;">下一页 </a>
