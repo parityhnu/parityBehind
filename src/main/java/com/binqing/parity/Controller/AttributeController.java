@@ -27,7 +27,6 @@ public class AttributeController {
     MongoTemplate mongoTemplate;
 
 
-
     @GetMapping("/get")
     public List<AttributeModel> get(@RequestParam (required = false) List<String> ids) {
         List<AttributeModel> result = new ArrayList<>();

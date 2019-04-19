@@ -3,7 +3,8 @@
 <%@ page import="com.binqing.parity.Model.*" %>
 <%@ page import="com.binqing.parity.Enum.CommentType" %>
 <%@ page import="java.text.SimpleDateFormat" %>
-<%@ page import="java.util.*" %><%--
+<%@ page import="java.util.*" %>
+<%@ page import="org.attoparser.util.TextUtil" %><%--
 =======
 <%@ page import="java.util.List" %>
 <%--
@@ -21,6 +22,8 @@
     <link rel="stylesheet" href="css/style2.css" type="text/css"/>
 </head>
 <style type="text/css">
+
+
     body {
         background: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%);
         height: 100%;
@@ -30,6 +33,10 @@
     * {
         padding: 0;
         margin: 0;
+    }
+
+    ul{
+        list-style:none;
     }
 
     font {
@@ -87,6 +94,8 @@
     String url_noindex = url_prensent.toString();
     url_prensent.append("&index=").append(index);
     String url_default = url_prensent.toString();
+
+    //评论相关
     CommentReturnModel returnModel =
             HttpService.getComments(ids, index);
     System.out.println(returnModel.getMaxPage());
@@ -112,6 +121,25 @@
         commentModelList.addAll(tmCommentModels);
     }
     Collections.sort(commentModelList);
+
+    //参数相关
+    List<AttributeModel> attributeModelList = HttpService.getAttributes(ids);
+    Map<String, List<AttributeModel>> attributesMap = new HashMap<>();
+
+    if (attributeModelList != null && !attributeModelList.isEmpty()) {
+        for (AttributeModel attributeModel : attributeModelList) {
+            if (attributeModel == null) {
+                continue;
+            }
+            if (attributesMap.get(attributeModel.getGid()) == null) {
+                attributesMap.put(attributeModel.getGid(), new ArrayList<>());
+            }
+            attributesMap.get(attributeModel.getGid()).add(attributeModel);
+        }
+    }
+
+    //商品本身
+    List<ParityModel> parityModelList = HttpService.getGoods(ids);
 
 %>
 <div class="all">
@@ -139,8 +167,107 @@
     <div class="container">
 
         <div class="item_content">
+            <p class="tip_parity">商城比价</p>
+            <%
+                if (parityModelList == null) {
+                    return;
+                }
+                for (ParityModel parityModel : parityModelList) {
+                    boolean over = false;
+                    int sc = parityModel.getSalecomment();
+                    double saleOrComment = sc;
+                    if (sc >= 10000) {
+                        saleOrComment /= 10000;
+                        over = true;
+                    }
+                    String saleComment = String.valueOf(sc);
+                    if (over) {
+                        saleComment = String.valueOf(saleOrComment);
+                        saleComment += "万";
+                    }
+                    String img = "";
+                    String root = "";
+                    switch (parityModel.getType()) {
+                        case 0:
+                            img = "img/jd.png";
+                            root = "京东商城";
+                            break;
+                        case 1:
+                            img = "img/tb.png";
+                            root = "淘宝网";
+                            break;
+                        case 2:
+                            img = "img/tmall.jpg";
+                            root = "天猫商城";
+                            break;
+                        default:
+                            img = "img/jd.png";
+                            root = "京东商城";
+                            break;
+                    }
+            %>
+            <div class="item_goods">
 
+                <div class="pic">
+                    <a target="_blank" href="<%=parityModel.getHref()%>">
+                        <img class="product" data-img="1"
+                             src="<%=parityModel.getImage()%>"/>
+                    </a>
+                </div>
 
+                <div class="goods_up">
+                    <div class="title">
+                        <a style="font-size: 18px" target="_blank" href="<%=parityModel.getHref()%>">
+                            <%=parityModel.getName()%>
+                        </a>
+                    </div>
+
+                    <div class="price">
+                        <p style="color: #cc0000;font-size:22px;font-weight: bold">￥<%=parityModel.getPrice()%>
+                        </p>
+                    </div>
+
+                    <div class="sale_comment">
+                        <p class="text_sale_comment">有
+                            <a href="<%=parityModel.getHref()%>"><%=saleComment%>
+                            </a>人<%=parityModel.getType() == 0 ? "评论" : "收货"%>
+                        </p>
+                    </div>
+
+                    <div class="shop">
+                        <p class="shop_title"><%=parityModel.getShop()%>
+                        </p>
+                        <img class="icon" src="<%=img%>">
+                        <p class="shop_origin"><%=root%>
+                        </p>
+
+                    </div>
+                </div>
+
+                <div class="goods_attribute">
+                    <ul class="attribute_list">
+                        <%
+                            List<AttributeModel> models = attributesMap.get(parityModel.getGid());
+                            if (models != null && !models.isEmpty()) {
+                                for (AttributeModel attributeModel : models) {
+                                %>
+                                <li class="item_attribute"><%=attributeModel.getAttribute()%></li>
+                                <%
+                                }
+                            }
+                        %>
+                    </ul>
+                </div>
+
+            </div>
+
+            <div style="height:1px;width:auto;border-top:1px solid #ccc;"></div>
+            <%
+                }%>
+        </div>
+
+        <div class="item_content">
+            <p class="tip_parity_comment">用户评价</p>
             <%
                 if (commentModelList == null) {
             %>
@@ -214,6 +341,25 @@
                     <%if (pics != null && !pics.isEmpty()) { %>
                     <div class="pics">
                         <% for (String src : pics) {
+                            if (commentModel instanceof JDCommentModel) {
+                                try {
+                                    String [] strings = src.split("/");
+                                    strings[3] = "shaidan";
+                                    strings[4] = "s616x405_jfs";
+                                    int length = strings.length;
+                                    StringBuilder builder = new StringBuilder();
+                                    for (int i = 0;i<length; i++) {
+                                        if (i < length - 1) {
+                                            builder.append(strings[i]).append("/");
+                                        } else {
+                                            builder.append(strings[i]);
+                                        }
+                                    }
+                                    src = builder.toString();
+                                } catch (Exception e) {
+
+                                }
+                            }
                         %>
 
                         <div class="pic">
@@ -394,6 +540,13 @@
             for (var j = 0; j < ld; j++) {
                 divs[j].onclick = function () {
                     var img = this.getElementsByClassName("pic_img")[0];
+                    var lc = checkdivs.length;
+                    for (var s = 0; s < lc; s ++ ) {
+                        var checkimg = checkdivs[s].getElementsByClassName("pic_img")[0];
+                        checkimg.name = "close";
+                        checkimg.style.height = 48 + "px";
+                        checkimg.style.width = 48 + "px";
+                    }
                     if (img.name == undefined || "" == img.name || "close" == img.name) {
                         img.name = "on";
                         father.style.height = img.naturalHeight;
@@ -401,20 +554,9 @@
                         img.style.width = img.naturalWidth;
                     } else {
                         img.name = "close";
-                        var lc = checkdivs.length;
-                        var close = true;
-                        for (s=0;s<lc;s++) {
-                            var checkimg = checkdivs[s].getElementsByClassName("pic_img")[0];
-                            if (checkimg.name == "on") {
-                                close = false;
-                                break;
-                            }
-                        }
                         img.style.height = 48 + "px";
                         img.style.width = 48 + "px";
-                        if (close == true) {
-                            father.style.height = 48 + "px";
-                        }
+                        father.style.height = 48 + "px";
                     }
                 }
             }

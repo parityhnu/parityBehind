@@ -9,6 +9,7 @@
 
 .all{
     width: 100%;
+
 }
 
 .all .content_guide{
@@ -79,13 +80,140 @@
 .all .container .item_content {
     background: #FFFFFF;
     height: auto;
-    width: 1000px;
+    width: 1100px;
     position: relative;
     margin: auto;
     left: 0;
     right: 0;
 }
 
+
+.all .container .item_content .tip_parity {
+    padding-top: 16px;
+    padding-left: 8px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.all .container .item_content .item_goods
+{
+    position: relative;
+    margin-top: 10px;
+    height: 180px;
+    overflow:hidden;
+}
+
+.all .container .item_content .item_goods .goods_up
+{
+    position: relative;
+    height: 70px;
+}
+
+.all .container .item_content .item_goods .goods_attribute
+{
+    position: relative;
+    margin-top: 10px;
+    height: 80px;
+}
+
+.all .container .item_content .item_goods .goods_attribute .attribute_list
+{
+    overflow: hidden;
+}
+
+.all .container .item_content .item_goods .goods_attribute .item_attribute
+{
+    width: 150px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    display:-webkit-box;
+    -webkit-box-orient:vertical;
+    -webkit-line-clamp:1;
+    padding-left: 25px;
+    float: left;
+    font-size: 12px;
+    color: #666;
+}
+
+.all .container .item_content .item_goods .pic
+{
+    margin-left: 8px;
+    height: 160px;
+    width: 160px;
+    float:left;
+}
+
+.all .container .item_content .item_goods .pic .product
+{
+    height: 160px;
+    width: 160px;
+}
+
+.all .container .item_content .item_goods .title
+{
+    margin-top: 22px;
+    margin-left: 8px;
+    width: 420px;
+    float:left;
+}
+
+.all .container .item_content .item_goods .price
+{
+    margin-top: 18px;
+    margin-left: 16px;
+    width: 100px;
+    float:left;
+}
+
+.all .container .item_content .item_goods .sale_comment
+{
+    margin-top: 24px;
+    margin-left: 50px;
+    width: 150px;
+    float:left;
+}
+
+.all .container .item_content .item_goods .sale_comment .text_sale_comment
+{
+    color: #5a5a5a;
+    font-size: 14px;
+}
+
+.all .container .item_content .item_goods .sale_comment .text_sale_comment a
+{
+    color: #005aa0;
+}
+
+.all .container .item_content .item_goods .shop
+{
+    margin-top: 18px;
+    margin-right: 8px;
+    width: 180px;
+    float:right;
+}
+
+.all .container .item_content .item_goods .shop .icon
+{
+    width: 18px;
+    height: 18px;
+    /*margin-left: 4px;*/
+    margin-top: 6px;
+    float:left;
+}
+
+.all .container .item_content .item_goods .shop .shop_title
+{
+    color: #5a5a5a;
+    font-size: 14px;
+}
+
+.all .container .item_content .item_goods .shop .shop_origin
+{
+    margin-top: 4px;
+    float: left;
+    font-size: 14px;
+    color: #5a5a5a;
+}
 
 .all .container .item_content .item_comment
 {
@@ -94,6 +222,15 @@
     overflow:hidden;
     padding-left: 20px;
     padding-right: 20px;
+    margin-left: 50px;
+    margin-right: 50px;
+}
+
+.all .container .item_content .tip_parity_comment {
+    padding-top: 16px;
+    padding-left: 8px;
+    font-size: 18px;
+    font-weight: bold;
 }
 
 .all .container .item_content .item_comment .user {
@@ -114,6 +251,7 @@
     width: 78px;
     height: 14px;
     background: url(//static.360buyimg.com/item/unite/1.0.71/components/default/comment/i/star.png) no-repeat;
+    margin-bottom: 8px;
 }
 
 .all .container .item_content .item_comment .comment {

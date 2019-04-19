@@ -1,8 +1,6 @@
 package com.binqing.parity.Service;
 
-import com.binqing.parity.Model.BaseCommentModel;
-import com.binqing.parity.Model.CommentReturnModel;
-import com.binqing.parity.Model.GoodsListModel;
+import com.binqing.parity.Model.*;
 import org.apache.http.util.TextUtils;
 import org.attoparser.util.TextUtil;
 import org.json.JSONException;
@@ -42,6 +40,25 @@ public class HttpService {
         return new GoodsListModel();
     }
 
+    public static List<ParityModel> getGoods(List<String> ids){
+        if (ids == null || ids.isEmpty()) {
+            return null;
+        }
+
+        try {
+            RestTemplate restTemplate=new RestTemplate();
+            StringBuilder url = new StringBuilder("http://localhost:9090/ip/getparitys?ids=");
+            int size = ids.size();
+            makeids(ids, url, size);
+            ResponseEntity<ParityModel[]> responseEntity = restTemplate.getForEntity(url.toString(), ParityModel[].class);
+            List<ParityModel> returnModel = Arrays.asList(responseEntity.getBody());
+            return returnModel;
+        } catch (Exception e) {
+            System.out.print(e);
+        }
+        return null;
+    }
+
     public static GoodsListModel test(){
         RestTemplate restTemplate=new RestTemplate();
         String url = "http://localhost:9090/ip/search?name={name}&page={page}&sort={sort}";
@@ -62,17 +79,7 @@ public class HttpService {
             RestTemplate restTemplate=new RestTemplate();
             StringBuilder url = new StringBuilder("http://localhost:9090/comment/get?ids=");
             int size = ids.size();
-            for (int i = 0 ; i < size; i++) {
-                String id = ids.get(i);
-                if (TextUtils.isEmpty(id)) {
-                    continue;
-                }
-                if (i == size - 1) {
-                    url.append(id);
-                } else {
-                    url.append(id).append(',');
-                }
-            }
+            makeids(ids, url, size);
             url.append("&index=").append(index);
             ResponseEntity<CommentReturnModel> responseEntity = restTemplate.getForEntity(url.toString(), CommentReturnModel.class);
             CommentReturnModel returnModel = responseEntity.getBody();
@@ -81,6 +88,39 @@ public class HttpService {
             System.out.print(e);
         }
         return null;
+    }
+
+    public static List<AttributeModel> getAttributes(List<String> ids){
+        if (ids == null || ids.isEmpty()) {
+            return null;
+        }
+
+        try {
+            RestTemplate restTemplate=new RestTemplate();
+            StringBuilder url = new StringBuilder("http://localhost:9090/attribute/get?ids=");
+            int size = ids.size();
+            makeids(ids, url, size);
+            ResponseEntity<AttributeModel[]> responseEntity = restTemplate.getForEntity(url.toString(), AttributeModel[].class);
+            List<AttributeModel> returnModel = Arrays.asList(responseEntity.getBody());
+            return returnModel;
+        } catch (Exception e) {
+            System.out.print(e);
+        }
+        return null;
+    }
+
+    private static void makeids(List<String> ids, StringBuilder url, int size) {
+        for (int i = 0 ; i < size; i++) {
+            String id = ids.get(i);
+            if (TextUtils.isEmpty(id)) {
+                continue;
+            }
+            if (i == size - 1) {
+                url.append(id);
+            } else {
+                url.append(id).append(',');
+            }
+        }
     }
 
 }

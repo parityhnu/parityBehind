@@ -102,6 +102,7 @@
 
     List<GoodsModel> goodsList = goodsListModel.getGoodsModelList();
     String url_noindex = "/search?name=" + name + "&sort=" + sort + "&page=";
+    url_noindex = url_noindex.replace(' ', '+');
 
     String url_default = "/search?name=" + name + "&page=" + index + "&sort=0";
     String url_sale_comment = "/search?name=" + name + "&page=" + index + "&sort=1";
@@ -119,6 +120,7 @@
             index3 = maxPage;
         }
     }
+
 %>
 <div class="all">
     <div class="content_guide">
@@ -190,7 +192,7 @@
                     </div>
 
                     <div class="title">
-                        <a class="title" style="font-size: 14px" target="_blank" href="/detail?ids=<%=ids.toString()%>"">
+                        <a class="title" style="font-size: 14px" target="_blank" href="/detail?ids=<%=ids.toString()%>">
                             <%=parityModels.size() == 2 ? parityModels.get(1).getName() : parityModels.get(0).getName()%>
                         </a>
                     </div>
@@ -231,6 +233,26 @@
                         saleComment = String.valueOf(saleOrComment);
                         saleComment += "万";
                     }
+                    String img = "";
+                    String root = "";
+                    switch (goodsModel.getType()) {
+                        case 0:
+                            img = "img/jd.png";
+                            root = "京东商城";
+                            break;
+                        case 1:
+                            img = "img/tb.png";
+                            root = "淘宝网";
+                            break;
+                        case 2:
+                            img = "img/tmall.jpg";
+                            root = "天猫商城";
+                            break;
+                        default:
+                            img = "img/jd.png";
+                            root = "京东商城";
+                            break;
+                    }
             %>
             <div class="item_goods">
                 <div class="pic">
@@ -261,8 +283,8 @@
                 <div class="shop">
                     <p class="shop_title"><%=goodsModel.getShop()%>
                     </p>
-                    <img class="icon" src="<%=goodsModel.getType() == 0?"img/jd.png":"img/tb.png"%>">
-                    <p class="shop_origin"><%=goodsModel.getType() == 0 ? "京东商城" : "淘宝商城"%>
+                    <img class="icon" src="<%=img%>">
+                    <p class="shop_origin"><%=root%>
                     </p>
 
                 </div>
@@ -351,7 +373,7 @@
 
 
                         <%if (maxPage > index3) {%>
-                        <a href=<%=url_noindex + (index3)%>>下一页</a>
+                        <a href=<%=url_noindex + index3%>>下一页</a>
                         <%} else {%>
                         <a href="javascript:return false;">下一页 </a>
                         <%}%>
