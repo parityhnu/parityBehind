@@ -23,7 +23,7 @@ import java.util.List;
 @RequestMapping("/comment")
 public class CommentController {
 
-    private static final int COMMENT_PAGE_SIZE = 8;
+    private static final int COMMENT_PAGE_SIZE = 15;
 
     @Autowired
     MongoTemplate mongoTemplate;

@@ -5,6 +5,8 @@ import com.binqing.parity.Enum.SortType;
 import com.binqing.parity.Model.GoodsListModel;
 import com.binqing.parity.Model.GoodsModel;
 import com.binqing.parity.Model.ParityModel;
+import org.apache.http.util.TextUtils;
+import org.attoparser.util.TextUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -103,10 +105,30 @@ public class IPController {
 
         if (page == 0) {
             goodsListModel.setParityGoodsList(findPairty(name, qsort, 0, 10, Sort.Direction.ASC, "distance",
-                        Sort.Direction.ASC, "order",ParityModel.class));
+                    Sort.Direction.ASC, "order",ParityModel.class));
         }
         return goodsListModel;
     }
+
+    @GetMapping("/getparitys")
+    public List<ParityModel> getparitys(@RequestParam List<String> ids) throws InterruptedException {
+        if (ids == null || ids.isEmpty()) {
+            return null;
+        }
+        List<ParityModel> result = new ArrayList<>();
+        for (String id : ids) {
+            if (TextUtils.isEmpty(id)) {
+                continue;
+            }
+            String [] strings = id.split(":");
+            if (strings.length >= 2) {
+                id = strings[1];
+                result.addAll(findPairty(id, 0, 1, null, null, null, null, ParityModel.class));
+            }
+        }
+        return result;
+    }
+
 
     @GetMapping("getFavorite")
     public List<ParityModel> getFavorite(@RequestParam String user) {
@@ -125,8 +147,8 @@ public class IPController {
             String keyword = (String) map.get("keyword");
             String sort = (String) map.get("sort");
 
-            result.addAll(findPairty(id1, 0, 0, null, null, null, null, ParityModel.class));
-            result.addAll(findPairty(id2, 0, 0, null, null, null, null, ParityModel.class));
+            result.addAll(findPairty(id1, 0, 1, null, null, null, null, ParityModel.class));
+            result.addAll(findPairty(id2, 0, 1, null, null, null, null, ParityModel.class));
             String code = new StringBuilder(keyword).append("urlurlurlaaaaa").append(sort).toString();
             String time = stringRedisTemplate.opsForValue().get(code);
             long currentTime = System.currentTimeMillis();
