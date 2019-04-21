@@ -137,7 +137,7 @@ public class IPController {
         }
         List<ParityModel> result = new ArrayList<>();
         String sql = "select id, keyword, sort from favorite where uid = ?";
-        List<Map<String, Object>> maps = jdbcTemplate.queryForList(sql);
+        List<Map<String, Object>> maps = jdbcTemplate.queryForList(sql, user);
         for (Map<String, Object> map : maps) {
             if (map == null) {
                 continue;

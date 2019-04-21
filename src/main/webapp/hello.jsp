@@ -103,7 +103,7 @@
             <% if (session.getAttribute("user") != null) {%>
             <a href="/signout">退出账户</a>
             <% }%>
-            <a href="<%=session.getAttribute("user") == null ? "/login" : ""%>">我的收藏</a>
+            <a href="<%=session.getAttribute("user") == null ? "/login" : "/favorite"%>">我的收藏</a>
         </div>
     </div>
     <div class="searchbox" align="center">
