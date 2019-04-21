@@ -3,6 +3,7 @@ package com.binqing.parity.Controller;
 import com.binqing.parity.Consts.TimeConsts;
 import com.binqing.parity.Enum.LoginStatus;
 import com.binqing.parity.Model.LoginModel;
+import com.binqing.parity.Model.ParityModel;
 import com.binqing.parity.Model.StringModel;
 import com.binqing.parity.Model.UserModel;
 import com.binqing.parity.PasswordHash;
@@ -20,6 +21,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.StreamSupport;
 
 @RestController
 @RequestMapping("/user")
@@ -27,7 +30,8 @@ public class UserController {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
-//
+
+    //
     @GetMapping("/test")
     public StringModel testall(@RequestParam String user) throws InvalidKeySpecException, NoSuchAlgorithmException {
         return requestPhone(user);
@@ -60,7 +64,7 @@ public class UserController {
 
     @PostMapping("/register")
     public UserModel register(@RequestParam String account, @RequestParam String password, @RequestParam String phone) throws InvalidKeySpecException, NoSuchAlgorithmException {
-        String sqlCheck = "select * from login where account =?" ;
+        String sqlCheck = "select * from login where account =?";
         LoginModel loginModel = validatePasswordBysql(sqlCheck, new String[]{account});
         if (loginModel != null) {
             return null;
@@ -68,7 +72,7 @@ public class UserController {
         String sql2 = "insert into user(account, name, phone) values (?,?,?);";
         jdbcTemplate.update(sql2, account, "Parity_" + account, phone);
         UserModel userModel = queryUserByAccount(account);
-        String salt =createSalt();
+        String salt = createSalt();
         password = PasswordHash.createHash(password + salt);
         String sql = "insert into login(account, password, salt, state, wrongtimes, uid) VALUES (?, ?, ?, ?, 0, ?);";
         jdbcTemplate.update(sql, account, password, salt, System.currentTimeMillis(), userModel.getUid());
@@ -80,7 +84,7 @@ public class UserController {
         HttpSession session = request.getSession(true);
         // 密码错误时check state，增加wrongtimes并更新state state显示状态 仅当为0时才会返回登陆成功 显示为时间戳时需要对wrongtimes进行计算，超过3次则不允许登陆
         // 接上，密码错误和不允许登陆需要返回不同的错误码（可以附在uid上 -1 -2）
-        String sql = "select * from login where account =?" ;
+        String sql = "select * from login where account =?";
         UserModel result = new UserModel();
         try {
             LoginModel loginModel = validatePasswordBysql(sql, new String[]{account});
@@ -91,10 +95,10 @@ public class UserController {
                 boolean isNeedUpdateState = true;
                 long state = loginModel.getState();
                 int wrongtimes = loginModel.getWrongtimes();
-                    if (wrongtimes >= 3) {
+                if (wrongtimes >= 3) {
                     //错误超过3次，如未到5分钟则不做操作。如果到了5分钟，那么继续错误的话就设为1并更新state
                     if (System.currentTimeMillis() - state > TimeConsts.MILLS_OF_ONE_MINUTE * 5) {
-                        if (PasswordHash.validatePassword( password + loginModel.getSalt(), loginModel.getPassword())) {
+                        if (PasswordHash.validatePassword(password + loginModel.getSalt(), loginModel.getPassword())) {
                             //清空次数
                             wrongtimes = 0;
                             result = queryUserByAccount(account);
@@ -110,7 +114,7 @@ public class UserController {
                     }
                 } else {
                     //错误次数没有超过3次,如果对了就清空，如果不对就+1
-                    if (PasswordHash.validatePassword( password + loginModel.getSalt(), loginModel.getPassword())) {
+                    if (PasswordHash.validatePassword(password + loginModel.getSalt(), loginModel.getPassword())) {
                         //清空次数
                         wrongtimes = 0;
                         result = queryUserByAccount(account);
@@ -146,6 +150,7 @@ public class UserController {
 
     @PostMapping("/requestName")
     public StringModel requestName(@RequestParam String user) {
+        StringModel stringModel = new StringModel();
         if (user == null || "".equals(user)) {
             return null;
         }
@@ -162,11 +167,13 @@ public class UserController {
         } catch (Exception e) {
             return null;
         }
-        return new StringModel(name);
+        stringModel.setString(name);
+        return stringModel;
     }
 
     @PostMapping("/requestPhone")
     public StringModel requestPhone(@RequestParam String user) {
+        StringModel stringModel = new StringModel();
         if (user == null || "".equals(user)) {
             return null;
         }
@@ -183,24 +190,27 @@ public class UserController {
         } catch (Exception e) {
             return null;
         }
-        return new StringModel(phone);
+        stringModel.setString(phone);
+        return stringModel;
     }
 
     //todo 有空的话 把这些错误清况整理一下...
     @PostMapping("/modify")
-    public StringModel modify(HttpServletRequest request, @RequestParam String user, @RequestParam String s1, @RequestParam(value = "s2",required = false) String s2, @RequestParam String modifyType) throws InvalidKeySpecException, NoSuchAlgorithmException {
+    public StringModel modify(HttpServletRequest request, @RequestParam String user, @RequestParam String s1, @RequestParam(value = "s2", required = false) String s2, @RequestParam String modifyType) throws InvalidKeySpecException, NoSuchAlgorithmException {
         System.out.println(user + "_" + modifyType + "_" + s1);
+        StringModel stringModel = new StringModel();
         HttpSession session = request.getSession();
         String sql;
         switch (modifyType) {
-            case "0":
+            case "0"://修改昵称
                 if (s1 == null || "".equals(s1)) {
                     return null;
                 }
                 sql = "update user set name = ? where uid = ?";
                 if (jdbcTemplate.update(sql, s1, user) == 1) {
                     session.setAttribute("name", s1);
-                    return new StringModel(s1);
+                    stringModel.setString(s1);
+                    return stringModel;
                 } else {
                     return null;
                 }
@@ -209,7 +219,8 @@ public class UserController {
                     return null;
                 }
                 if (s1.equals(s2)) {
-                    return new StringModel(s2);
+                    stringModel.setString(s2);
+                    return stringModel;
                 }
                 if (s1.equals(requestPhone(user).getString())) {
                     sql = "update user set phone = ? where uid = ?";
@@ -217,26 +228,29 @@ public class UserController {
                         StringBuilder builder = new StringBuilder(s2);
                         builder.replace(3, 7, "****");
                         session.setAttribute("ph", builder.toString());
-                        return new StringModel(s2);
+                        stringModel.setString(s2);
+                        return stringModel;
                     } else {
                         return null;
                     }
                 }
-            case "2":
+            case "2"://修改密码
                 if (s1 == null || "".equals(s1) || s2 == null || "".equals(s2)) {
                     return null;
                 }
                 if (s1.equals(s2)) {
-                    return new StringModel(s2);
+                    stringModel.setString(s2);
+                    return stringModel;
                 }
-                sql = "select * from login where uid =?" ;
+                sql = "select * from login where uid =?";
                 LoginModel loginModel = validatePasswordBysql(sql, new String[]{user});
-                if (loginModel != null && PasswordHash.validatePassword( s1 + loginModel.getSalt(), loginModel.getPassword())) {
+                if (loginModel != null && PasswordHash.validatePassword(s1 + loginModel.getSalt(), loginModel.getPassword())) {
                     String sql2 = "update login set password = ? , salt = ? where uid = ?";
-                    String salt =createSalt();
+                    String salt = createSalt();
                     String password = PasswordHash.createHash(s2 + salt);
                     if (jdbcTemplate.update(sql2, password, salt, user) == 1) {
-                        return new StringModel(s2);
+                        stringModel.setString(s2);
+                        return stringModel;
                     } else {
                         return null;
                     }
@@ -251,38 +265,107 @@ public class UserController {
     @PostMapping("/forgetPassword")
     public StringModel forgetPassword(@RequestParam String account, @RequestParam String phone, @RequestParam String password) throws InvalidKeySpecException, NoSuchAlgorithmException {
         System.out.println(account + "_" + phone + "_" + password);
+        StringModel stringModel = new StringModel();
         if (account == null || "".equals(account)) {
-            return new StringModel("-1");
+            stringModel.setString("-1");
+            return stringModel;
         }
         if (phone == null || "".equals(phone)) {
-            return new StringModel("-1");
+            stringModel.setString("-1");
+            return stringModel;
         }
         if (password == null || "".equals(password)) {
-            return new StringModel("-1");
+            stringModel.setString("-1");
+            return stringModel;
         }
-        String sql = "select phone from user where account =?" ;
+        String sql = "select phone from user where account =?";
         try {
             String phone_check = jdbcTemplate.queryForObject(sql, new String[]{account}, (resultSet, i) -> resultSet.getString("phone"));
             if (phone.equals(phone_check)) {
                 String sql2 = "update login set password = ? , salt = ? where account = ?";
-                String salt =createSalt();
+                String salt = createSalt();
                 password = PasswordHash.createHash(password + salt);
                 if (jdbcTemplate.update(sql2, password, salt, account) == 1) {
-                    return new StringModel(account);
+                    stringModel.setString(account);
+                    return stringModel;
                 } else {
-                    return new StringModel("-1");
+                    stringModel.setString("-1");
+                    return stringModel;
                 }
             } else {
-                return new StringModel("-1");
+                stringModel.setString("-1");
+                return stringModel;
             }
-        }catch (Exception e) {
-            return new StringModel("-1");
+        } catch (Exception e) {
+            stringModel.setString("-1");
+            return stringModel;
         }
     }
 
+    @PostMapping("/favorite")
+    public StringModel favorite(@RequestParam String user,  @RequestParam String id,
+                                @RequestParam String name, @RequestParam String sort, @RequestParam boolean cancel) {
+        StringModel stringModel = new StringModel();
+        if (user == null || "".equals(user) || id == null || "".equals(id)
+                || name == null || "".equals(name) || sort == null || "".equals(sort)) {
+            stringModel.setString("null");
+            return stringModel;
+        }
+        try {
+            id = id.split(":")[1];
+        } catch (Exception e) {
+            stringModel.setString("null");
+            return stringModel;
+        }
+        String sql;
+        if (cancel) {
+            sql = "delete from favorite where uid = ? and id = ? and keyword = ? and sort = ?;";
+        } else {
+            sql = "insert into favorite(uid, id, keyword, sort) VALUES (?, ?, ?, ?);";
+        }
+        if (jdbcTemplate.update(sql, user, id, name, sort) == 1) {
+            stringModel.setString(id + "_" + cancel);
+            return stringModel;
+        }
+        stringModel.setString("null");
+        return stringModel;
+    }
+
+    @GetMapping("/checkfavorite")
+    public StringModel checkfavorite(@RequestParam String user,  @RequestParam String id,
+                                @RequestParam String name, @RequestParam String sort) {
+        StringModel stringModel = new StringModel();
+        if (user == null || "".equals(user) || id == null || "".equals(id)
+                || name == null || "".equals(name) || sort == null || "".equals(sort)) {
+            stringModel.setString("null");
+            return stringModel;
+        }
+        try {
+            id = id.split(":")[1];
+        } catch (Exception e) {
+            stringModel.setString("null");
+            return stringModel;
+        }
+        String sql = "SELECT id from favorite where uid = ? and id = ? and keyword = ? and sort = ?;";
+        String result = "";
+        try {
+            result = jdbcTemplate.queryForObject(sql, new String[]{user,id ,name,sort}, new RowMapper<String>() {
+                @Override
+                public String mapRow(ResultSet resultSet, int i) throws SQLException {
+                    String id = resultSet.getString("id");
+                    return id;
+                }
+            });
+        } catch (Exception e) {
+            stringModel.setString("null");
+            return stringModel;
+        }
+        stringModel.setString(result);
+        return stringModel;
+    }
 
     private String createSalt() {
-        byte [] values = new byte[128];
+        byte[] values = new byte[128];
         SecureRandom random = new SecureRandom();
         random.nextBytes(values);
         String salt = String.valueOf(values);
@@ -302,7 +385,7 @@ public class UserController {
         });
     }
 
-    private LoginModel validatePasswordBysql(String sql, String [] columns) {
+    private LoginModel validatePasswordBysql(String sql, String[] columns) {
         LoginModel loginModel;
         try {
             loginModel = jdbcTemplate.queryForObject(sql, columns, (resultSet, i) -> {
@@ -316,7 +399,7 @@ public class UserController {
                 return loginModel1;
             });
             return loginModel;
-        }catch (Exception e) {
+        } catch (Exception e) {
             return null;
         }
     }

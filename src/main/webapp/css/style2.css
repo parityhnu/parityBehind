@@ -9,6 +9,7 @@
 
 .all{
     width: 100%;
+
 }
 
 .all .content_guide{
@@ -86,9 +87,12 @@
     right: 0;
 }
 
-.all .container .item_content .sort_tab {
-    padding-top: 8px;
+
+.all .container .item_content .tip_parity {
+    padding-top: 16px;
     padding-left: 8px;
+    font-size: 18px;
+    font-weight: bold;
 }
 
 .all .container .item_content .item_goods
@@ -97,6 +101,38 @@
     margin-top: 10px;
     height: 180px;
     overflow:hidden;
+}
+
+.all .container .item_content .item_goods .goods_up
+{
+    position: relative;
+    height: 70px;
+}
+
+.all .container .item_content .item_goods .goods_attribute
+{
+    position: relative;
+    margin-top: 10px;
+    height: 80px;
+}
+
+.all .container .item_content .item_goods .goods_attribute .attribute_list
+{
+    overflow: hidden;
+}
+
+.all .container .item_content .item_goods .goods_attribute .item_attribute
+{
+    width: 150px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    display:-webkit-box;
+    -webkit-box-orient:vertical;
+    -webkit-line-clamp:1;
+    padding-left: 25px;
+    float: left;
+    font-size: 12px;
+    color: #666;
 }
 
 .all .container .item_content .item_goods .pic
@@ -160,7 +196,7 @@
 {
     width: 18px;
     height: 18px;
-    margin-left: 4px;
+    /*margin-left: 4px;*/
     margin-top: 6px;
     float:left;
 }
@@ -179,96 +215,109 @@
     color: #5a5a5a;
 }
 
-.all .container  .nav_tab {
+.all .container .item_content .item_comment
+{
     position: relative;
-    margin: auto;
-    left: 0;
-    right: 0;
-    width: 350px;
-    height: 100px;
+    margin-top: 10px;
+    overflow:hidden;
+    padding-left: 20px;
+    padding-right: 20px;
+    margin-left: 50px;
+    margin-right: 50px;
 }
 
-.all .container .nav_tab .nav_first {
-    margin-top: 16px;
-    float: left;
-}
-
-.all .container .nav_tab .nav_before {
-    margin-top: 16px;
-    margin-left: 16px;
-    float: left;
-}
-
-.all .container .nav_tab .current {
-    margin-top: 16px;
-    margin-left: 16px;
-    float: left;
-}
-
-.all .container .nav_tab .nav_after {
-    margin-top: 16px;
-    margin-left: 16px;
-    float: left;
-}
-
-.all .container .nav_tab .count {
-    margin-top: 16px;
-    margin-left: 16px;
-    float: left;
-}
-
-.all .container .item_content .tip_product_detail {
+.all .container .item_content .tip_parity_comment {
     padding-top: 16px;
     padding-left: 8px;
     font-size: 18px;
     font-weight: bold;
 }
 
-.all .container .item_content .parity_goods
-{
-    position: relative;
-    height: 220px;
-    width: 1000px;
-    padding-top: 16px;
-    padding-left: 8px;
-}
-
-.all .container .item_content .parity_goods .item_parity_goods
-{
-    height: 230px;
-    box-sizing: border-box;
-    width: 20%;
+.all .container .item_content .item_comment .user {
+    width: 150px;
     float: left;
 }
 
-.all .container .item_content .parity_goods .item_parity_goods .pic
-{
-    height: 120px;
+.all .container .item_content .item_comment .user .nick {
+    margin-top: 8px;
 }
 
-.all .container .item_content .parity_goods .item_parity_goods .product
-{
-    text-align: center;
-    height: 120px;
-    width: 120px;
+.all .container .item_content .item_comment .user .shop {
+    margin-top: 8px;
 }
 
-.all .container .item_content .parity_goods .item_parity_goods .title
-{
-    text-align: center;
-    word-wrap:break-word;
-    word-break:break-all;
-    overflow: hidden;
+.all .container .item_content .item_comment .user .comment-star {
+    margin-top: 8px;
+    width: 78px;
+    height: 14px;
+    background: url(//static.360buyimg.com/item/unite/1.0.71/components/default/comment/i/star.png) no-repeat;
+    margin-bottom: 8px;
 }
 
-.all .container .item_content .parity_goods .item_parity_goods .price
-{
-    text-align: center;
-    margin-top: 4px;
+.all .container .item_content .item_comment .comment {
+    width: 810px;
+    float: left;
+    padding-bottom: 16px;
 }
 
-.all .container .item_content .parity_goods .item_parity_goods .count
-{
-    text-align: center;
-    margin-top: 4px;
+.all .container .item_content .item_comment .comment .rateContent {
+    width: 100%;
+    margin-top: 8px;
+}
+
+.all .container .item_content .item_comment .comment .pics {
+    width: 100%;
+    margin-top: 8px;
+    height: 48px;
+}
+
+.all .container .item_content .item_comment .comment .pics .pic {
+    margin-left: 8px;
+    float: left;
+}
+
+.all .container .item_content .item_comment .comment .pics .pic .pic_img {
+    width: 48px;
+    height: 48px;
+}
+
+.all .container .item_content .item_comment .comment .timeandsku {
+    width: 100%;
+    height: 20px;
+    margin-top: 8px;
+}
+
+.all .container .item_content .item_comment .comment .attend {
+    width: 100%;
+    margin-top: 8px;
+}
+
+.all .container .item_content .item_comment .comment .attend .attend_content {
+    width: 100%;
+    margin-top: 8px;
+}
+
+.all .container .item_content .item_comment .comment .attend .pics {
+    width: 100%;
+    margin-top: 8px;
+    height: 48px;
+}
+
+.all .container .item_content .item_comment .comment .attend .pics .pic {
+    margin-left: 8px;
+    float: left;
+}
+
+.all .container .item_content .item_comment .comment .attend .pics .pic .pic_img {
+    width: 48px;
+    height: 48px;
+}
+
+.all .container  .nav_tab {
+    position: relative;
+    margin: auto;
+    left: 0;
+    right: 0;
+    width: 450px;
+    height: 100px;
 }
