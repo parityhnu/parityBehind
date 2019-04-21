@@ -136,19 +136,17 @@ public class IPController {
             return null;
         }
         List<ParityModel> result = new ArrayList<>();
-        String sql = "select id1, id2, keyword, sort from favorite where uid = ?";
+        String sql = "select id, keyword, sort from favorite where uid = ?";
         List<Map<String, Object>> maps = jdbcTemplate.queryForList(sql);
         for (Map<String, Object> map : maps) {
             if (map == null) {
                 continue;
             }
-            String id1 = (String) map.get("id1");
-            String id2 = (String) map.get("id2");
+            String id = (String) map.get("id");
             String keyword = (String) map.get("keyword");
             String sort = (String) map.get("sort");
 
-            result.addAll(findPairty(id1, 0, 1, null, null, null, null, ParityModel.class));
-            result.addAll(findPairty(id2, 0, 1, null, null, null, null, ParityModel.class));
+            result.addAll(findPairty(id, 0, 1, null, null, null, null, ParityModel.class));
             String code = new StringBuilder(keyword).append("urlurlurlaaaaa").append(sort).toString();
             String time = stringRedisTemplate.opsForValue().get(code);
             long currentTime = System.currentTimeMillis();

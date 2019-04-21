@@ -70,6 +70,8 @@
 <body>
 
 <%
+    String name = (String) request.getAttribute("name");
+    String sort = (String) request.getAttribute("sort");
     List<String> ids = (List<String>) request.getAttribute("ids");
     if (ids == null || ids.isEmpty()) {
         return;
@@ -92,13 +94,13 @@
         }
     }
     String url_noindex = url_prensent.toString();
-    url_prensent.append("&index=").append(index);
+    url_prensent.append("&index=").append(index).append("&name=").append(name).append("&sort=").append(sort);
     String url_default = url_prensent.toString();
+    String url_login = url_default.replace('&', '_');
 
     //评论相关
     CommentReturnModel returnModel =
             HttpService.getComments(ids, index);
-    System.out.println(returnModel.getMaxPage());
     int maxPage = returnModel.getMaxPage();
     if (Integer.parseInt(index) > maxPage) {
         if (maxPage == 0) {
@@ -145,12 +147,12 @@
 <div class="all">
     <div class="content_guide">
         <div class="guide">
-            <a href="<%=session.getAttribute("user") == null ? "/login?href=" + url_default : "/modify?href=" + url_default%>"><%=session.getAttribute("user") == null ? "请登录" : "欢迎您," + session.getAttribute("name")%>
+            <a href="<%=session.getAttribute("user") == null ? "/login?href=" + url_login : "/modify?href=" + url_login%>"><%=session.getAttribute("user") == null ? "请登录" : "欢迎您," + session.getAttribute("name")%>
             </a>
             <% if (session.getAttribute("user") != null) {%>
-            <a href="<%="/signout?href=" + url_default%>">退出账户</a>
+            <a href="<%="/signout?href=" + url_login%>">退出账户</a>
             <% }%>
-            <a href="<%=session.getAttribute("user") == null ? "/login?href=" + url_default : ""%>">我的收藏</a>
+            <a href="<%=session.getAttribute("user") == null ? "/login?href=" + url_login : ""%>">我的收藏</a>
         </div>
     </div>
 
@@ -205,6 +207,15 @@
                             root = "京东商城";
                             break;
                     }
+                    String img_name = parityModel.getTypeGid() + "_";
+                    String img_src = "img/tofavorite.png";
+                    StringModel stringModel = HttpService.checkFavorite(String.valueOf(session.getAttribute("user")), parityModel.getTypeGid(), name, sort);
+                    if (stringModel != null && parityModel.getGid().equals(stringModel.getString())) {
+                        img_src = "img/favorite.png";
+                        img_name += "true";
+                    } else {
+                        img_name += "false";
+                    }
             %>
             <div class="item_goods">
 
@@ -238,8 +249,9 @@
                         <p class="shop_title"><%=parityModel.getShop()%>
                         </p>
                         <img class="icon" src="<%=img%>">
-                        <p class="shop_origin"><%=root%>
-                        </p>
+                        <p class="shop_origin"><%=root%></p>
+                        <img class="favorite" name="<%=img_name%>" src="<%=img_src%>"
+                             style="width: 18px; height: 18px;margin-left: 6px;margin-top: 6px;float: left;">
 
                     </div>
                 </div>
@@ -562,6 +574,64 @@
             }
         }
 
+        var favorites = document.getElementsByClassName("favorite");
+        var lf = favorites.length;
+        var request = new XMLHttpRequest();
+        for (var i = 0; i < lf; i ++) {
+            let img = favorites[i];
+            let id = img.name.split('_')[0];
+            let todo = img.name.split('_')[1];
+            let user = "<%=session.getAttribute("user")%>";
+            let name = "<%=name%>";
+            let sort = "<%=sort%>";
+
+            var url = "/user/checkfavorite";
+
+            img.onclick = function () {
+                if ("null" == user) {
+                    setTimeout(window.location.href = "/login?href=<%=url_login%>", 0);
+                    return;
+                }
+                var cancel = true;
+                if (todo == "false") {
+                    cancel = false;
+                }
+                var url = "/user/favorite";
+                request.open("post", url, true);
+                var data = new FormData();
+                data.append("id", id);
+                data.append("user", user);
+                data.append("name", name);
+                data.append("sort", sort);
+                data.append("cancel", cancel);
+                request.onreadystatechange = function() {
+                    if (this.readyState == 4) {
+                        var json = JSON.parse(this.responseText);
+                        var result = json.string;
+                        console.log(result);
+                        if (result != null) {
+                            var s1 = result.split("_")[0];
+                            var s2 = result.split("_")[1];
+                            console.log(s1)
+                            console.log(s2)
+                            if (s1 == id.split(":")[1]) {
+
+                                if (s2 == "true") {
+                                    img.src = "img/tofavorite.png";
+                                    todo = "false";
+                                    img.name = id + "_" + todo;
+                                } else {
+                                    img.src = "img/favorite.png";
+                                    todo = "true";
+                                    img.name = id + "_" + todo;
+                                }
+                            }
+                        }
+                    }
+                };
+                request.send(data);
+            }
+        }
     }
 
 

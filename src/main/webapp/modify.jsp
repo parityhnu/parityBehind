@@ -170,6 +170,7 @@
     if (href == null || "".equals(href)) {
         href = "/hello";
     }
+    href = href.replace('_', '&');
 %>
 
 <body>

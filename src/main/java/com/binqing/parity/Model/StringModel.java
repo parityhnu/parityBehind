@@ -10,8 +10,4 @@ public class StringModel {
     public void setString(String string) {
         this.string = string;
     }
-
-    public StringModel(String string) {
-        this.string = string;
-    }
 }

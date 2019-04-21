@@ -22,6 +22,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.StreamSupport;
 
 @RestController
 @RequestMapping("/user")
@@ -149,6 +150,7 @@ public class UserController {
 
     @PostMapping("/requestName")
     public StringModel requestName(@RequestParam String user) {
+        StringModel stringModel = new StringModel();
         if (user == null || "".equals(user)) {
             return null;
         }
@@ -165,11 +167,13 @@ public class UserController {
         } catch (Exception e) {
             return null;
         }
-        return new StringModel(name);
+        stringModel.setString(name);
+        return stringModel;
     }
 
     @PostMapping("/requestPhone")
     public StringModel requestPhone(@RequestParam String user) {
+        StringModel stringModel = new StringModel();
         if (user == null || "".equals(user)) {
             return null;
         }
@@ -186,13 +190,15 @@ public class UserController {
         } catch (Exception e) {
             return null;
         }
-        return new StringModel(phone);
+        stringModel.setString(phone);
+        return stringModel;
     }
 
     //todo 有空的话 把这些错误清况整理一下...
     @PostMapping("/modify")
     public StringModel modify(HttpServletRequest request, @RequestParam String user, @RequestParam String s1, @RequestParam(value = "s2", required = false) String s2, @RequestParam String modifyType) throws InvalidKeySpecException, NoSuchAlgorithmException {
         System.out.println(user + "_" + modifyType + "_" + s1);
+        StringModel stringModel = new StringModel();
         HttpSession session = request.getSession();
         String sql;
         switch (modifyType) {
@@ -203,7 +209,8 @@ public class UserController {
                 sql = "update user set name = ? where uid = ?";
                 if (jdbcTemplate.update(sql, s1, user) == 1) {
                     session.setAttribute("name", s1);
-                    return new StringModel(s1);
+                    stringModel.setString(s1);
+                    return stringModel;
                 } else {
                     return null;
                 }
@@ -212,7 +219,8 @@ public class UserController {
                     return null;
                 }
                 if (s1.equals(s2)) {
-                    return new StringModel(s2);
+                    stringModel.setString(s2);
+                    return stringModel;
                 }
                 if (s1.equals(requestPhone(user).getString())) {
                     sql = "update user set phone = ? where uid = ?";
@@ -220,7 +228,8 @@ public class UserController {
                         StringBuilder builder = new StringBuilder(s2);
                         builder.replace(3, 7, "****");
                         session.setAttribute("ph", builder.toString());
-                        return new StringModel(s2);
+                        stringModel.setString(s2);
+                        return stringModel;
                     } else {
                         return null;
                     }
@@ -230,7 +239,8 @@ public class UserController {
                     return null;
                 }
                 if (s1.equals(s2)) {
-                    return new StringModel(s2);
+                    stringModel.setString(s2);
+                    return stringModel;
                 }
                 sql = "select * from login where uid =?";
                 LoginModel loginModel = validatePasswordBysql(sql, new String[]{user});
@@ -239,7 +249,8 @@ public class UserController {
                     String salt = createSalt();
                     String password = PasswordHash.createHash(s2 + salt);
                     if (jdbcTemplate.update(sql2, password, salt, user) == 1) {
-                        return new StringModel(s2);
+                        stringModel.setString(s2);
+                        return stringModel;
                     } else {
                         return null;
                     }
@@ -254,14 +265,18 @@ public class UserController {
     @PostMapping("/forgetPassword")
     public StringModel forgetPassword(@RequestParam String account, @RequestParam String phone, @RequestParam String password) throws InvalidKeySpecException, NoSuchAlgorithmException {
         System.out.println(account + "_" + phone + "_" + password);
+        StringModel stringModel = new StringModel();
         if (account == null || "".equals(account)) {
-            return new StringModel("-1");
+            stringModel.setString("-1");
+            return stringModel;
         }
         if (phone == null || "".equals(phone)) {
-            return new StringModel("-1");
+            stringModel.setString("-1");
+            return stringModel;
         }
         if (password == null || "".equals(password)) {
-            return new StringModel("-1");
+            stringModel.setString("-1");
+            return stringModel;
         }
         String sql = "select phone from user where account =?";
         try {
@@ -271,41 +286,82 @@ public class UserController {
                 String salt = createSalt();
                 password = PasswordHash.createHash(password + salt);
                 if (jdbcTemplate.update(sql2, password, salt, account) == 1) {
-                    return new StringModel(account);
+                    stringModel.setString(account);
+                    return stringModel;
                 } else {
-                    return new StringModel("-1");
+                    stringModel.setString("-1");
+                    return stringModel;
                 }
             } else {
-                return new StringModel("-1");
+                stringModel.setString("-1");
+                return stringModel;
             }
         } catch (Exception e) {
-            return new StringModel("-1");
+            stringModel.setString("-1");
+            return stringModel;
         }
     }
 
-    @GetMapping("/favorite")
-    public StringModel favorite(@RequestParam String user,  @RequestParam String id1, @RequestParam String id2,
-                                @RequestParam String keyword, @RequestParam String sort, @RequestParam boolean cancel) {
-        if (user == null || "".equals(user) || id1 == null || "".equals(id1) || id2 == null || "".equals(id2)
-                || keyword == null || "".equals(keyword) || sort == null || "".equals(sort)) {
-            return null;
+    @PostMapping("/favorite")
+    public StringModel favorite(@RequestParam String user,  @RequestParam String id,
+                                @RequestParam String name, @RequestParam String sort, @RequestParam boolean cancel) {
+        StringModel stringModel = new StringModel();
+        if (user == null || "".equals(user) || id == null || "".equals(id)
+                || name == null || "".equals(name) || sort == null || "".equals(sort)) {
+            stringModel.setString("null");
+            return stringModel;
         }
         try {
-            id1 = id1.split(":")[1];
-            id2 = id2.split(":")[1];
+            id = id.split(":")[1];
         } catch (Exception e) {
-            return null;
+            stringModel.setString("null");
+            return stringModel;
         }
         String sql;
         if (cancel) {
-            sql = "delete from favorite where uid = ? and id1 = ? and id2 = ? and keyword = ? and sort = ?;";
+            sql = "delete from favorite where uid = ? and id = ? and keyword = ? and sort = ?;";
         } else {
-            sql = "insert into favorite(uid, id1, id2, keyword, sort) VALUES (?, ?, ?, ?, ?);";
+            sql = "insert into favorite(uid, id, keyword, sort) VALUES (?, ?, ?, ?);";
         }
-        if (jdbcTemplate.update(sql, user, id1, id2, keyword, sort) == 1) {
-            return new StringModel(id1 + "_" + cancel);
+        if (jdbcTemplate.update(sql, user, id, name, sort) == 1) {
+            stringModel.setString(id + "_" + cancel);
+            return stringModel;
         }
-        return null;
+        stringModel.setString("null");
+        return stringModel;
+    }
+
+    @GetMapping("/checkfavorite")
+    public StringModel checkfavorite(@RequestParam String user,  @RequestParam String id,
+                                @RequestParam String name, @RequestParam String sort) {
+        StringModel stringModel = new StringModel();
+        if (user == null || "".equals(user) || id == null || "".equals(id)
+                || name == null || "".equals(name) || sort == null || "".equals(sort)) {
+            stringModel.setString("null");
+            return stringModel;
+        }
+        try {
+            id = id.split(":")[1];
+        } catch (Exception e) {
+            stringModel.setString("null");
+            return stringModel;
+        }
+        String sql = "SELECT id from favorite where uid = ? and id = ? and keyword = ? and sort = ?;";
+        String result = "";
+        try {
+            result = jdbcTemplate.queryForObject(sql, new String[]{user,id ,name,sort}, new RowMapper<String>() {
+                @Override
+                public String mapRow(ResultSet resultSet, int i) throws SQLException {
+                    String id = resultSet.getString("id");
+                    return id;
+                }
+            });
+        } catch (Exception e) {
+            stringModel.setString("null");
+            return stringModel;
+        }
+        stringModel.setString(result);
+        return stringModel;
     }
 
     private String createSalt() {

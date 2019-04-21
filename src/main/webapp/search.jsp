@@ -108,6 +108,7 @@
     String url_sale_comment = "/search?name=" + name + "&page=" + index + "&sort=1";
     String url_price_asc = "/search?name=" + name + "&page=" + index + "&sort=2";
     String url_price_desc = "/search?name=" + name + "&page=" + index + "&sort=3";
+    String url_login = "/search?name=" + name + "_page=" + index + "_sort=" + sort;
     int maxPage = goodsListModel.getMaxPage() + 1;
     if (goodsListModel.getMaxPage() == 0) {
         maxPage = 0;
@@ -125,12 +126,12 @@
 <div class="all">
     <div class="content_guide">
         <div class="guide">
-            <a href="<%=session.getAttribute("user") == null ? "/login?href=/search?name="+name+"&page="+index +"&sort="+sort : "/modify?href=/search?name="+name+"&page="+index +"&sort="+sort%>"><%=session.getAttribute("user") == null ? "请登录" : "欢迎您," + session.getAttribute("name")%>
+            <a href="<%=session.getAttribute("user") == null ? "/login?href="+url_login : "/modify?href="+url_login%>"><%=session.getAttribute("user") == null ? "请登录" : "欢迎您," + session.getAttribute("name")%>
             </a>
             <% if (session.getAttribute("user") != null) {%>
-            <a href="<%="/signout?href=/search&name="+name+"&page="+index +"&sort="+sort%>">退出账户</a>
+            <a href="<%="/signout?href=" + url_login%>">退出账户</a>
             <% }%>
-            <a href="<%=session.getAttribute("user") == null ? "/login?href=/search?name="+name+"&page="+index +"&sort="+sort : ""%>">我的收藏</a>
+            <a href="<%=session.getAttribute("user") == null ? "/login?href="+ url_login : ""%>">我的收藏</a>
         </div>
     </div>
 
@@ -182,7 +183,7 @@
                 %>
                 <div class="item_parity_goods">
                     <div class="pic">
-                        <a target="_blank" href="/detail?ids=<%=ids.toString()%>">
+                        <a target="_blank" href="/detail?ids=<%=ids.toString()%>&name=<%=name%>&sort=<%=sort%>">
                             <p style="text-align: center">
                                 <img class="product" data-img="1"
                                      src="<%=parityModels.size() == 2 ? parityModels.get(1).getImage() : parityModels.get(0).getImage()%>"/>
@@ -192,7 +193,7 @@
                     </div>
 
                     <div class="title">
-                        <a class="title" style="font-size: 14px" target="_blank" href="/detail?ids=<%=ids.toString()%>">
+                        <a class="title" style="font-size: 14px" target="_blank" href="/detail?ids=<%=ids.toString()%>&name=<%=name%>&sort=<%=sort%>">
                             <%=parityModels.size() == 2 ? parityModels.get(1).getName() : parityModels.get(0).getName()%>
                         </a>
                     </div>

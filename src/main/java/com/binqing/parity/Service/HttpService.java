@@ -109,6 +109,24 @@ public class HttpService {
         return null;
     }
 
+    public static StringModel checkFavorite( String user, String id, String name, String sort){
+        if (user == null || user.isEmpty() || id == null || id.isEmpty() || name == null || name.isEmpty() || sort == null || sort.isEmpty()) {
+            return null;
+        }
+
+        try {
+            RestTemplate restTemplate=new RestTemplate();
+            StringBuilder url = new StringBuilder("http://localhost:9090/user/checkfavorite?user=");
+            url.append(user).append("&id=").append(id).append("&name=").append(name).append("&sort=").append(sort);
+
+            ResponseEntity<StringModel> responseEntity = restTemplate.getForEntity(url.toString(), StringModel.class);
+            return responseEntity.getBody();
+        } catch (Exception e) {
+            System.out.print(e);
+        }
+        return null;
+    }
+
     private static void makeids(List<String> ids, StringBuilder url, int size) {
         for (int i = 0 ; i < size; i++) {
             String id = ids.get(i);
