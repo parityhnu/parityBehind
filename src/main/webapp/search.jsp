@@ -137,7 +137,7 @@
 
     <div class="search_content">
         <div class="searchbox">
-            <img class="image1" src="img/title.png" height="129" width="270"/>
+            <a href="/hello"><img class="image1" src="img/title.png" height="129" width="270"/></a>
             <form action="/search" onsubmit="return checkName()">
                 <input type="text" class="shuru" id="name" name="name" value="<%=name%>"/>
                 <input type="submit" class="ok" value="比价吧" style="cursor: pointer">
