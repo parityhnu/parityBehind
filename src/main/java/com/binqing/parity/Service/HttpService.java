@@ -127,6 +127,24 @@ public class HttpService {
         return null;
     }
 
+    public static List<ParityModel> getFavorites(String user){
+        if (user == null || TextUtils.isEmpty(user)) {
+            return null;
+        }
+
+        try {
+            RestTemplate restTemplate=new RestTemplate();
+            StringBuilder url = new StringBuilder("http://localhost:9090/ip/getFavorite?user=");
+            url.append(user);
+            ResponseEntity<ParityModel[]> responseEntity = restTemplate.getForEntity(url.toString(), ParityModel[].class);
+            List<ParityModel> returnModel = Arrays.asList(responseEntity.getBody());
+            return returnModel;
+        } catch (Exception e) {
+            System.out.print(e);
+        }
+        return null;
+    }
+
     private static void makeids(List<String> ids, StringBuilder url, int size) {
         for (int i = 0 ; i < size; i++) {
             String id = ids.get(i);

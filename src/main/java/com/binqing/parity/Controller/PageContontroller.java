@@ -90,5 +90,21 @@ public class PageContontroller {
         return modelAndView;
     }
 
+    @RequestMapping("/favorite")
+    public ModelAndView favorite(HttpServletRequest request,
+                                 @RequestParam(value = "page", required = false) String page) {
+        HttpSession session = request.getSession();
+        if (session.getAttribute("user") == null) {
+            ModelAndView modelAndView = new ModelAndView();
+            modelAndView.addObject("href", "/favorite");
+            modelAndView.setViewName("login");
+            return modelAndView;
+        }
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.addObject("page",page);
+        modelAndView.setViewName("favorite");
+        return modelAndView;
+    }
+
 
 }

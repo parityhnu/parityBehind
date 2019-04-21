@@ -89,17 +89,20 @@ public class CommentController {
             return new CommentReturnModel();
         }
         Collections.sort(result);
-        int maxPgae = size / COMMENT_PAGE_SIZE;
-        if (maxPgae * COMMENT_PAGE_SIZE < size) {
-            maxPgae += 1;
+        int maxPage = size / COMMENT_PAGE_SIZE;
+        if (maxPage * COMMENT_PAGE_SIZE < size) {
+            maxPage += 1;
         }
-        List<BaseCommentModel> finalList;
-        if (page >= maxPgae) {
-            page = maxPgae;
-            finalList = result.subList((page - 1) * COMMENT_PAGE_SIZE, size);
-        } else {
-            finalList = result.subList((page - 1) * COMMENT_PAGE_SIZE, page * COMMENT_PAGE_SIZE);
+        List<BaseCommentModel> finalList = new ArrayList<>();
+        if (maxPage != 0) {
+            if (page >= maxPage) {
+                page = maxPage;
+                finalList = result.subList((page - 1) * COMMENT_PAGE_SIZE, size);
+            } else {
+                finalList = result.subList((page - 1) * COMMENT_PAGE_SIZE, page * COMMENT_PAGE_SIZE);
+            }
         }
+
         //以下一步过滤的目的是，因为经过HttpService之后会过滤掉子类的一些属性
         List<JDCommentModel> jdCommentModels = new ArrayList<>();
         List<TBCommentModel> tbCommentModels = new ArrayList<>();
@@ -114,7 +117,7 @@ public class CommentController {
             }
         }
         CommentReturnModel returnModel = new CommentReturnModel();
-        returnModel.setMaxPage(maxPgae);
+        returnModel.setMaxPage(maxPage);
         returnModel.setJdCommentModels(jdCommentModels);
         returnModel.setTbCommentModels(tbCommentModels);
         returnModel.setTmCommentModels(tmCommentModels);

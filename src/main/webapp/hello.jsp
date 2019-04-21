@@ -103,11 +103,11 @@
             <% if (session.getAttribute("user") != null) {%>
             <a href="/signout">退出账户</a>
             <% }%>
-            <a href="<%=session.getAttribute("user") == null ? "/login" : ""%>">我的收藏</a>
+            <a href="<%=session.getAttribute("user") == null ? "/login" : "/favorite"%>">我的收藏</a>
         </div>
     </div>
     <div class="searchbox" align="center">
-        <img class="image1" src="img/title.png" height="129" width="270"/>
+        <a href="/hello"><img class="image1" src="img/title.png" height="129" width="270"/></a>
         <form action = "/search" onsubmit="return checkName()">
             <input type="text" class="shuru" id = "name" name = "name"/>
             <input type="submit" class="ok" value="比价吧"  style="cursor: pointer"  >

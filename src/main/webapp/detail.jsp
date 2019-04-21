@@ -71,6 +71,7 @@
 
 <%
     String name = (String) request.getAttribute("name");
+    name = name.replace(' ', '+');
     String sort = (String) request.getAttribute("sort");
     List<String> ids = (List<String>) request.getAttribute("ids");
     if (ids == null || ids.isEmpty()) {
@@ -93,8 +94,9 @@
             url_prensent.append(id).append(',');
         }
     }
+    url_prensent.append("&name=").append(name).append("&sort=").append(sort);
     String url_noindex = url_prensent.toString();
-    url_prensent.append("&index=").append(index).append("&name=").append(name).append("&sort=").append(sort);
+    url_prensent.append("&index=").append(index);
     String url_default = url_prensent.toString();
     String url_login = url_default.replace('&', '_');
 
@@ -152,13 +154,13 @@
             <% if (session.getAttribute("user") != null) {%>
             <a href="<%="/signout?href=" + url_login%>">退出账户</a>
             <% }%>
-            <a href="<%=session.getAttribute("user") == null ? "/login?href=" + url_login : ""%>">我的收藏</a>
+            <a href="<%=session.getAttribute("user") == null ? "/login?href=" + url_login : "/favorite"%>">我的收藏</a>
         </div>
     </div>
 
     <div class="search_content">
         <div class="searchbox">
-            <img class="image1" src="img/title.png" height="129" width="270"/>
+            <a href="/hello"><img class="image1" src="img/title.png" height="129" width="270"/></a>
             <form action="/search" onsubmit="return checkName()">
                 <input type="text" class="shuru" id="name" name="name" placeholder="输入你要比价的商品名称"/>
                 <input type="submit" class="ok" value="比价吧" style="cursor: pointer">
@@ -552,18 +554,21 @@
             for (var j = 0; j < ld; j++) {
                 divs[j].onclick = function () {
                     var img = this.getElementsByClassName("pic_img")[0];
-                    var lc = checkdivs.length;
-                    for (var s = 0; s < lc; s ++ ) {
-                        var checkimg = checkdivs[s].getElementsByClassName("pic_img")[0];
-                        checkimg.name = "close";
-                        checkimg.style.height = 48 + "px";
-                        checkimg.style.width = 48 + "px";
-                    }
                     if (img.name == undefined || "" == img.name || "close" == img.name) {
+                        var lc = checkdivs.length;
+                        for (var s = 0; s < lc; s ++ ) {
+                            var checkimg = checkdivs[s].getElementsByClassName("pic_img")[0];
+                            checkimg.name = "close";
+                            checkimg.style.height = 48 + "px";
+                            checkimg.style.width = 48 + "px";
+                        }
                         img.name = "on";
-                        father.style.height = img.naturalHeight;
-                        img.style.height = img.naturalHeight;
-                        img.style.width = img.naturalWidth;
+                        var natH = img.naturalHeight;
+                        var natW = img.naturalWidth;
+                        var WcH = natW/natH * 400;
+                        father.style.height = 400 + "px";
+                        img.style.height = 400 + "px";
+                        img.style.width = WcH + "px";
                     } else {
                         img.name = "close";
                         img.style.height = 48 + "px";
