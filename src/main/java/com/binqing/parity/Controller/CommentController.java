@@ -95,11 +95,12 @@ public class CommentController {
         }
         List<BaseCommentModel> finalList = new ArrayList<>();
         if (maxPage != 0) {
-            if (page >= maxPage) {
-                page = maxPage;
+            if (page == maxPage) {
                 finalList = result.subList((page - 1) * COMMENT_PAGE_SIZE, size);
-            } else {
+            } else if (page < maxPage) {
                 finalList = result.subList((page - 1) * COMMENT_PAGE_SIZE, page * COMMENT_PAGE_SIZE);
+            } else {
+
             }
         }
 
