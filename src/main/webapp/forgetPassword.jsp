@@ -252,7 +252,8 @@
                 hit.innerHTML = "手机号应为11位";
             } else {
                 submit(function(res) {
-                    if (res === account.value) {
+                    var json = JSON.parse(res);
+                    if (json.string === account.value) {
                         hit.innerHTML = "设置成功";
                         setTimeout(window.location.href = "<%=href%>", 1000);
                     } else {

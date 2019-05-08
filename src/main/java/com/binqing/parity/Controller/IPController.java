@@ -145,7 +145,11 @@ public class IPController {
             String id = (String) map.get("id");
             String keyword = (String) map.get("keyword");
             String sort = (String) map.get("sort");
-
+            String[] strings = id.split(":");
+            if (strings.length >= 2) {
+                String judge = strings[0];
+                id = strings[1];
+            }
             result.addAll(findPairty(id, 0, 1, null, null, null, null, ParityModel.class));
             String code = new StringBuilder(keyword).append("urlurlurlaaaaa").append(sort).toString();
             String time = stringRedisTemplate.opsForValue().get(code);

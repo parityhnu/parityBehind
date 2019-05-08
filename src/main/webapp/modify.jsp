@@ -295,8 +295,8 @@
             //需要更改的都check
             if (modifyName) {
                 submit(function(res) {
-                    console.log(res);
-                    if (res === uname.value) {
+                    var json = JSON.parse(res);
+                    if (json.string === uname.value) {
                         hit.innerHTML += "修改昵称成功";
                     }
                 },"<%=session.getAttribute("user")%>", uname.value, null, "0");
@@ -304,7 +304,8 @@
 
             if (modifyPhone) {
                 submit(function(res) {
-                    if (res === phone.value) {
+                    var json = JSON.parse(res);
+                    if (json.string === phone.value) {
                         hit.innerHTML += " 修改手机成功";
                     }
                 },"<%=session.getAttribute("user")%>", phone_present.value, phone.value, "1");
@@ -312,7 +313,8 @@
 
             if (modifyPwd) {
                 submit(function(res) {
-                    if (res === passwd.value) {
+                    var json = JSON.parse(res);
+                    if (json.string === passwd.value) {
                         hit.innerHTML += " 修改密码成功";
                     }
                 },"<%=session.getAttribute("user")%>", passwd_present.value, passwd.value, "2");

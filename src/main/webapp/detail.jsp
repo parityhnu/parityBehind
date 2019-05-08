@@ -103,6 +103,9 @@
     //评论相关
     CommentReturnModel returnModel =
             HttpService.getComments(ids, index);
+    if (returnModel == null) {
+        return;
+    }
     int maxPage = returnModel.getMaxPage();
     if (Integer.parseInt(index) > maxPage) {
         if (maxPage == 0) {
@@ -136,7 +139,8 @@
                 continue;
             }
             if (attributesMap.get(attributeModel.getGid()) == null) {
-                attributesMap.put(attributeModel.getGid(), new ArrayList<>());
+                List<AttributeModel> list = new ArrayList<>();
+                attributesMap.put(attributeModel.getGid(), list);
             }
             attributesMap.get(attributeModel.getGid()).add(attributeModel);
         }
