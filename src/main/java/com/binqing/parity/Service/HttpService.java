@@ -145,6 +145,108 @@ public class HttpService {
         return null;
     }
 
+    public static ConfigModel getConfig(){
+        try {
+            RestTemplate restTemplate=new RestTemplate();
+            StringBuilder url = new StringBuilder("http://localhost:9090/controller/admin/getconfig");
+            ResponseEntity<ConfigModel> responseEntity = restTemplate.getForEntity(url.toString(), ConfigModel.class);
+            return responseEntity.getBody();
+        } catch (Exception e) {
+            System.out.print(e);
+        }
+        return null;
+    }
+
+    public static UserModel getUser(String uid){
+        if (uid == null || TextUtils.isEmpty(uid)) {
+            return null;
+        }
+        try {
+            RestTemplate restTemplate=new RestTemplate();
+            StringBuilder url = new StringBuilder("http://localhost:9090/controller/admin/getuser?user=");
+            url.append(uid);
+            ResponseEntity<UserModel> responseEntity = restTemplate.getForEntity(url.toString(), UserModel.class);
+            return responseEntity.getBody();
+        } catch (Exception e) {
+            System.out.print(e);
+        }
+        return null;
+    }
+
+    public static List<UserModel> getUsers(String page){
+        if (page == null || TextUtils.isEmpty(page)) {
+            return null;
+        }
+        try {
+            RestTemplate restTemplate=new RestTemplate();
+            StringBuilder url = new StringBuilder("http://localhost:9090/controller/admin/getusers?page=");
+            url.append(page);
+            ResponseEntity<UserModel[]> responseEntity = restTemplate.getForEntity(url.toString(), UserModel[].class);
+            List<UserModel> returnModel = Arrays.asList(responseEntity.getBody());
+            return returnModel;
+        } catch (Exception e) {
+            System.out.print(e);
+        }
+        return null;
+    }
+
+    public static UserModel getAdmin(String uid){
+        if (uid == null || TextUtils.isEmpty(uid)) {
+            return null;
+        }
+        try {
+            RestTemplate restTemplate=new RestTemplate();
+            StringBuilder url = new StringBuilder("http://localhost:9090/controller/admin/getadmin?user=");
+            url.append(uid);
+            ResponseEntity<UserModel> responseEntity = restTemplate.getForEntity(url.toString(), UserModel.class);
+            return responseEntity.getBody();
+        } catch (Exception e) {
+            System.out.print(e);
+        }
+        return null;
+    }
+
+    public static List<UserModel> getAdmins(String page){
+        if (page == null || TextUtils.isEmpty(page)) {
+            return null;
+        }
+        try {
+            RestTemplate restTemplate=new RestTemplate();
+            StringBuilder url = new StringBuilder("http://localhost:9090/controller/admin/getadmins?page=");
+            url.append(page);
+            ResponseEntity<UserModel[]> responseEntity = restTemplate.getForEntity(url.toString(), UserModel[].class);
+            List<UserModel> returnModel = Arrays.asList(responseEntity.getBody());
+            return returnModel;
+        } catch (Exception e) {
+            System.out.print(e);
+        }
+        return null;
+    }
+
+    public static Integer getAdminNumber(){
+        try {
+            RestTemplate restTemplate=new RestTemplate();
+            StringBuilder url = new StringBuilder("http://localhost:9090/controller/admin/getadminnumber");
+            ResponseEntity<Integer> responseEntity = restTemplate.getForEntity(url.toString(), Integer.class);
+            return responseEntity.getBody();
+        } catch (Exception e) {
+            System.out.print(e);
+        }
+        return null;
+    }
+
+    public static Integer getUserNumber(){
+        try {
+            RestTemplate restTemplate=new RestTemplate();
+            StringBuilder url = new StringBuilder("http://localhost:9090/controller/admin/getusernumber");
+            ResponseEntity<Integer> responseEntity = restTemplate.getForEntity(url.toString(), Integer.class);
+            return responseEntity.getBody();
+        } catch (Exception e) {
+            System.out.print(e);
+        }
+        return null;
+    }
+
     private static void makeids(List<String> ids, StringBuilder url, int size) {
         for (int i = 0 ; i < size; i++) {
             String id = ids.get(i);

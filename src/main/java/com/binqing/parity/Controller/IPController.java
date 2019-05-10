@@ -2,9 +2,7 @@ package com.binqing.parity.Controller;
 
 import com.binqing.parity.Consts.TimeConsts;
 import com.binqing.parity.Enum.SortType;
-import com.binqing.parity.Model.GoodsListModel;
-import com.binqing.parity.Model.GoodsModel;
-import com.binqing.parity.Model.ParityModel;
+import com.binqing.parity.Model.*;
 import org.apache.http.util.TextUtils;
 import org.attoparser.util.TextUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +12,14 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -76,8 +77,16 @@ public class IPController {
         //否则直接进mongoDB找
         GoodsListModel goodsListModel = new GoodsListModel();
         if (time == null || (time != null && saveTime - Long.parseLong(time) > TimeConsts.MILLS_OF_ONE_DAY)) {
+            ConfigModel configModel = getConfig();
             stringRedisTemplate.opsForValue().set(code, String.valueOf(saveTime));
-            stringRedisTemplate.opsForList().leftPush(REDIS_URL, new StringBuilder(name).append("_").append(qsort).toString());
+            stringRedisTemplate.opsForList().leftPush(REDIS_URL, new StringBuilder(name)
+                    .append("_")
+                    .append(qsort)
+                    .append("_")
+                    .append(configModel.getJd())
+                    .append("_")
+                    .append(configModel.getTb())
+                    .toString());
             AtomicInteger integer = new AtomicInteger(10);
             while(integer.decrementAndGet() > 0) {
                 List<GoodsModel> goodsModelList = goodsListModel.getGoodsModelList();
@@ -100,7 +109,6 @@ public class IPController {
             if (pageModel != null && !pageModel.isEmpty()) {
                 goodsListModel.setMaxPage(pageModel.get(0).getPage());
             }
-
         }
 
         if (page == 0) {
@@ -145,7 +153,11 @@ public class IPController {
             String id = (String) map.get("id");
             String keyword = (String) map.get("keyword");
             String sort = (String) map.get("sort");
-
+            String[] strings = id.split(":");
+            if (strings.length >= 2) {
+                String judge = strings[0];
+                id = strings[1];
+            }
             result.addAll(findPairty(id, 0, 1, null, null, null, null, ParityModel.class));
             String code = new StringBuilder(keyword).append("urlurlurlaaaaa").append(sort).toString();
             String time = stringRedisTemplate.opsForValue().get(code);
@@ -231,6 +243,19 @@ public class IPController {
         query.with(new Sort(new Sort.Order(Sort.Direction.DESC, "page")));
         return mongoTemplate.find(query, clazz);
 
+    }
+
+    private ConfigModel getConfig() {
+        String querySql = "select * from config where id = 1;";
+        return jdbcTemplate.queryForObject(querySql, new RowMapper<ConfigModel>() {
+            @Override
+            public ConfigModel mapRow(ResultSet resultSet, int i) throws SQLException {
+                ConfigModel configModel = new ConfigModel();
+                configModel.setJd(resultSet.getInt("jd"));
+                configModel.setTb(resultSet.getInt("tb"));
+                return configModel;
+            }
+        });
     }
 
 //    private GoodsListModel parity(List<JDModel> jdModelList, List<TBModel> tbModelList, String keyword) {
