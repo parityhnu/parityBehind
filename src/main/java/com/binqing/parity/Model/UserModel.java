@@ -9,6 +9,8 @@ public class UserModel {
 
     private String phone;
 
+    private long state;
+
     public int getUid() {
         return uid;
     }
@@ -39,5 +41,13 @@ public class UserModel {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public long getState() {
+        return state;
+    }
+
+    public void setState(long state) {
+        this.state = state;
     }
 }

@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <link rel="icon" type="image/x-icon" href="#" />
-    <link type="text/css" rel="styleSheet"  href="css/main.css" />
+    <link type="text/css" rel="styleSheet"  href="../css/main.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>账户登录</title>
+    <title>管理员登录</title>
     <style>
         *{
             margin: 0;
@@ -170,14 +170,6 @@
     </style>
 </head>
 
-<%
-    String href = (String) request.getAttribute("href");
-    if (href == null || "".equals(href)) {
-        href = "/hello";
-    }
-    href = href.replace('_', '&');
-%>
-
 <body>
 <div id="bg">
     <div id="hint"><!-- 提示框 -->
@@ -195,12 +187,11 @@
                         <p class="form"><input type="text" style="color: rgba(0,0,0,0.40)" id="user" placeholder="账户名"></p>
                         <p class="form"><input type="password" style="color: rgba(0,0,0,0.40)" id="passwd" placeholder="密码"></p>
                         <p class="form confirm"><input type="password" style="color: rgba(0,0,0,0.40)" id="confirm-passwd" placeholder="重复确定密码"></p>
-                        <p class="form confirm"><input type="number" style="color: rgba(0,0,0,0.40)" id="phone" placeholder="手机号"></p>
 
                         <input type="button" value="登录" class="btn" onclick="login()" style="margin-right: 20px;">
                         <input type="button" value="注册" class="btn" onclick='signin()' id="btn">
                     </form>
-                    <a href="/forgetPassword?href=/login?href=<%=href%>">忘记密码?</a>
+
                 </span>
         </div>
 
@@ -211,11 +202,9 @@
 <script>
     var onoff = true;//根据此布尔值判断当前为注册状态还是登录状态
     var confirm = document.getElementsByClassName("confirm")[0];
-    var input_phone = document.getElementsByClassName("confirm")[1];
     var user = document.getElementById("user");
     var passwd = document.getElementById("passwd");
     var con_pass = document.getElementById("confirm-passwd");
-    var phone = document.getElementById("phone");
 
     //引用hint()在最上方弹出提示
     function hint() {
@@ -235,12 +224,11 @@
     function submit(callback) {
         if (passwd.value == con_pass.value) {
             var request = new XMLHttpRequest();
-            var url = "/user/register";
+            var url = "http://localhost:9090/user/admin/register";
             request.open("post", url, true);
             var data = new FormData();
             data.append("account", user.value);
             data.append("password", passwd.value);
-            data.append("phone", phone.value);
             request.onreadystatechange = function() {
                 if (this.readyState == 4) {
                     callback.call(this, this.responseText)
@@ -250,47 +238,53 @@
         } else {
             hit.innerHTML = "两次密码不同";
             hitting();
-            }
+        }
     }
     //注册按钮
     function signin() {
         var status = document.getElementById("status").getElementsByTagName("i");
         var hit = document.getElementById("hint").getElementsByTagName("p")[0];
-        if (onoff) {
-            confirm.style.height = 51 + "px";
-            input_phone.style.height = 51 + "px";
-            status[0].style.top = 35 + "px";
-            status[1].style.top = 0;
-            onoff = !onoff
-        } else {
-            if (!/^[A-Za-z][A-Za-z0-9]+$/.test(user.value))
-                hit.innerHTML = "账号只能为英文开头的英文和数字";
-            else if (user.value.length < 6)
-                hit.innerHTML = "账号长度必须大于6位";
-            else if (passwd.value.length < 6 || passwd.value.length > 12)
-                hit.innerHTML = "密码长度必须大于6位，小于12位";
-            else if (!(/^[A-Za-z0-9]+$/.test(passwd.value) ||
-                /[a-zA-Z~!@#$%^&*.]+/.test(passwd.value) ||
-                /[\d~!@#$%^&*.]*/.test(passwd.value) ||
-                /[\da-zA-Z~!@#$%^&*.]+/.test(passwd.value)))
-                hit.innerHTML = "密码必须由英文、数字或特殊字符的两种或以上组合";
-            else if (passwd.value != con_pass.value)
-                hit.innerHTML = "两次密码不相等";
-            else if (phone.value.length != 11)
-                hit.innerHTML = "手机号必须为11位"
-            else if (passwd.value = con_pass.value) {
-                submit(function(res) {
-                    var json = JSON.parse(res);
-                    if (json.account == user.value) {
-                        hit.innerHTML = "账号注册成功，两秒后自动刷新页面";
-                        setTimeout("window.location.reload()", 2000);
-                    } else  {
-                        hit.innerHTML = "该账号已存在";
-                    }
-                })
+        var admin = "<%=session.getAttribute("admin")%>";
+
+        if ("0" == admin) {
+            if (onoff) {
+                confirm.style.height = 51 + "px";
+                status[0].style.top = 35 + "px";
+                status[1].style.top = 0;
+                onoff = !onoff
+            } else {
+                if (!/^[A-Za-z][A-Za-z0-9]+$/.test(user.value))
+                    hit.innerHTML = "账号只能为英文开头的英文和数字";
+                else if (user.value.length < 6)
+                    hit.innerHTML = "账号长度必须大于6位";
+                else if (passwd.value.length < 6 || passwd.value.length > 12)
+                    hit.innerHTML = "密码长度必须大于6位，小于12位";
+                else if (!(/^[A-Za-z0-9]+$/.test(passwd.value) ||
+                        /[a-zA-Z~!@#$%^&*.]+/.test(passwd.value) ||
+                        /[\d~!@#$%^&*.]*/.test(passwd.value) ||
+                        /[\da-zA-Z~!@#$%^&*.]+/.test(passwd.value)))
+                    hit.innerHTML = "密码必须由英文、数字或特殊字符的两种或以上组合";
+                else if (passwd.value != con_pass.value)
+                    hit.innerHTML = "两次密码不相等";
+                else if (passwd.value = con_pass.value) {
+                    submit(function(res) {
+                        var json = JSON.parse(res);
+                        if (json.account == user.value) {
+                            hit.innerHTML = "账号注册成功，两秒后自动刷新页面";
+                            setTimeout("window.location.reload()", 2000);
+                        } else  {
+                            hit.innerHTML = "该账号已存在";
+                        }
+                    })
+                }
+                hint()
             }
-            hint()
+        } else {
+            hit.innerText = "请先登录超级管理员帐号";
+            hint();
+            return;
         }
+
     }
 
     //登录按钮
@@ -298,7 +292,7 @@
         if (onoff) {
             var hit = document.getElementById("hint").getElementsByTagName("p")[0];
             var request = new XMLHttpRequest();
-            var url = "/user/login";
+            var url = "http://localhost:9090/user/admin/login";
             request.open("post", url, true);
             var data = new FormData();
             data.append("account", user.value);
@@ -307,29 +301,28 @@
                 if (this.readyState == 4) {
                     if (this.responseText == false)
                         hit.innerHTML = "登录失败";
-                    }
-                    else {
-                        var json = JSON.parse(this.responseText);
-                        if (json.uid > 0) {
-                            hit.innerHTML = "登录成功";
-                            setTimeout(window.location.href = "<%=href%>", 1000);
-                        } else {
-                            if (json.uid == -1) {
-                                hit.innerHTML = "账户名或者密码错误";
-                            } else if (json.uid == -2) {
-                                hit.innerHTML = "错误次数过多，请过5分钟后再试";
-                            } else if (json.uid == -3) {
-                                hit.innerText = "帐号被封禁，请找管理员处理";
-                            }
+                }
+                else {
+                    var json = JSON.parse(this.responseText);
+                    if (json.uid > 0) {
+                        hit.innerHTML = "登录成功";
+                        setTimeout(window.location.href = "<%="/admin/hello"%>", 1000);
+                    } else {
+                        if (json.uid == -1) {
+                            hit.innerHTML = "账户名或者密码错误";
+                        } else if (json.uid == -2) {
+                            hit.innerHTML = "错误次数过多，请过5分钟后再试";
+                        } else if (json.uid == -3) {
+                            hit.innerText = "帐号被封禁，请找管理员处理";
                         }
                     }
+                }
                 hint();
             };
             request.send(data);
-            } else {
+        } else {
             var status = document.getElementById("status").getElementsByTagName("i");
             confirm.style.height = 0;
-            input_phone.style.height = 0;
             status[0].style.top = 0;
             status[1].style.top = 35 + "px";
             onoff = !onoff

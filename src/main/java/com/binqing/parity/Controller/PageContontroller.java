@@ -106,5 +106,71 @@ public class PageContontroller {
         return modelAndView;
     }
 
+    @RequestMapping("/admin/login")
+    public ModelAndView login() {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("adminlogin");
+        return modelAndView;
+    }
+
+    @RequestMapping("/admin/hello")
+    public ModelAndView adminHello() {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("admin");
+        return modelAndView;
+    }
+
+    @RequestMapping("/admin/crawler")
+    public ModelAndView adminPythonState() {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("admin");
+        return modelAndView;
+    }
+
+    @RequestMapping("/admin/admin")
+    public ModelAndView adminAdmin(@RequestParam(value = "index", required = false) String index) {
+        ModelAndView modelAndView = new ModelAndView();
+        if (index == null || "".equals(index)) {
+            index = "1";
+        }
+        modelAndView.addObject("index", index);
+        modelAndView.setViewName("adminadmin");
+        return modelAndView;
+    }
+
+    @RequestMapping("/admin/user")
+    public ModelAndView adminUser(@RequestParam(value = "index", required = false) String index) {
+        ModelAndView modelAndView = new ModelAndView();
+        if (index == null || "".equals(index)) {
+            index = "1";
+        }
+        modelAndView.addObject("index", index);
+        modelAndView.setViewName("adminuser");
+        return modelAndView;
+    }
+
+    @RequestMapping("/admin/information")
+    public ModelAndView adminInfo() {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("admininfo");
+        return modelAndView;
+    }
+
+    @RequestMapping("/admin/userdetail")
+    public ModelAndView userDetail(@RequestParam String user) {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.addObject("user", user);
+        modelAndView.setViewName("adminuserdetail");
+        return modelAndView;
+    }
+
+    @RequestMapping("/admin/admindetail")
+    public ModelAndView adminDetail(@RequestParam String user) {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.addObject("user", user);
+        modelAndView.setViewName("adminadmindetail");
+        return modelAndView;
+    }
+
 
 }

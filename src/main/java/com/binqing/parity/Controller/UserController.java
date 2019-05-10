@@ -2,15 +2,13 @@ package com.binqing.parity.Controller;
 
 import com.binqing.parity.Consts.TimeConsts;
 import com.binqing.parity.Enum.LoginStatus;
-import com.binqing.parity.Model.LoginModel;
-import com.binqing.parity.Model.ParityModel;
-import com.binqing.parity.Model.StringModel;
-import com.binqing.parity.Model.UserModel;
+import com.binqing.parity.Model.*;
 import com.binqing.parity.PasswordHash;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.web.bind.annotation.*;
+import sun.rmi.runtime.Log;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -19,10 +17,6 @@ import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.StreamSupport;
 
 @RestController
 @RequestMapping("/user")
@@ -65,7 +59,7 @@ public class UserController {
     @PostMapping("/register")
     public UserModel register(@RequestParam String account, @RequestParam String password, @RequestParam String phone) throws InvalidKeySpecException, NoSuchAlgorithmException {
         String sqlCheck = "select * from login where account =?";
-        LoginModel loginModel = validatePasswordBysql(sqlCheck, new String[]{account});
+        LoginModel loginModel = queryLoginModel(sqlCheck, new String[]{account});
         if (loginModel != null) {
             return null;
         }
@@ -87,13 +81,17 @@ public class UserController {
         String sql = "select * from login where account =?";
         UserModel result = new UserModel();
         try {
-            LoginModel loginModel = validatePasswordBysql(sql, new String[]{account});
+            LoginModel loginModel = queryLoginModel(sql, new String[]{account});
             System.out.println(loginModel);
             if (loginModel == null) {
                 result.setUid(LoginStatus.WRONG.getValue());
             } else {
                 boolean isNeedUpdateState = true;
                 long state = loginModel.getState();
+                if (state < 0) {
+                    result.setUid(LoginStatus.BAN.getValue());
+                    return result;
+                }
                 int wrongtimes = loginModel.getWrongtimes();
                 if (wrongtimes >= 3) {
                     //错误超过3次，如未到5分钟则不做操作。如果到了5分钟，那么继续错误的话就设为1并更新state
@@ -130,6 +128,93 @@ public class UserController {
                     jdbcTemplate.update(sql, state, wrongtimes, account);
                 } else {
                     sql = "update login set  wrongtimes = ? where account = ?";
+                    jdbcTemplate.update(sql, wrongtimes, account);
+                }
+            }
+            return result;
+        } catch (Exception e) {
+            result.setUid(LoginStatus.WRONG.getValue());
+            return result;
+        }
+    }
+
+    @RequestMapping("/admin/register")
+    public AdminLoginModel adminRegister(HttpServletRequest request, @RequestParam String account, @RequestParam String password) throws InvalidKeySpecException, NoSuchAlgorithmException {
+        HttpSession session = request.getSession(true);
+        AdminLoginModel result = new AdminLoginModel();
+        if (session.getAttribute("admin") == null || "".equals(session.getAttribute("admin"))) {
+            result.setAccount("-1");
+            return result;
+        }
+        String sqlCheck = "select * from admin where account =?";
+        result = queryAdminLoginModel(sqlCheck, new String[]{account});
+        if (result != null) {
+            result.setAccount("-1");
+            return result;
+        }
+        String salt = createSalt();
+        password = PasswordHash.createHash(password + salt);
+        String sql = "insert into admin(account, password, salt, state, wrongtimes, type) VALUES (?, ?, ?, ?, 0, 1);";
+        jdbcTemplate.update(sql, account, password, salt, System.currentTimeMillis());
+        result = queryAdminLoginModel(sqlCheck, new String[]{account});
+        return result;
+    }
+
+    @PostMapping("/admin/login")
+    public AdminLoginModel adminLogin(HttpServletRequest request, @RequestParam String account, @RequestParam String password) throws InvalidKeySpecException, NoSuchAlgorithmException {
+        HttpSession session = request.getSession(true);
+        // 密码错误时check state，增加wrongtimes并更新state state显示状态 仅当为0时才会返回登陆成功 显示为时间戳时需要对wrongtimes进行计算，超过3次则不允许登陆
+        // 接上，密码错误和不允许登陆需要返回不同的错误码（可以附在uid上 -1 -2）
+        String sql = "select * from admin where account =?";
+        AdminLoginModel result = new AdminLoginModel();
+        try {
+            AdminLoginModel adminLoginModel = queryAdminLoginModel(sql, new String[]{account});
+            System.out.println(adminLoginModel);
+            if (adminLoginModel == null) {
+                result.setUid(LoginStatus.WRONG.getValue());
+            } else {
+                boolean isNeedUpdateState = true;
+                long state = adminLoginModel.getState();
+                if (state < 0) {
+                    result.setUid(LoginStatus.BAN.getValue());
+                    return result;
+                }
+                int wrongtimes = adminLoginModel.getWrongtimes();
+                if (wrongtimes >= 3) {
+                    //错误超过3次，如未到5分钟则不做操作。如果到了5分钟，那么继续错误的话就设为1并更新state
+                    if (System.currentTimeMillis() - state > TimeConsts.MILLS_OF_ONE_MINUTE * 5) {
+                        if (PasswordHash.validatePassword(password + adminLoginModel.getSalt(), adminLoginModel.getPassword())) {
+                            //清空次数
+                            wrongtimes = 0;
+                            result.setUid(1);
+                            session.setAttribute("admin", adminLoginModel.getType());
+                        } else {
+                            //设置次数为1，并且更新state
+                            wrongtimes = 1;
+                            result.setUid(LoginStatus.WRONG.getValue());
+                        }
+                    } else {
+                        isNeedUpdateState = false;
+                        result.setUid(LoginStatus.WRONG_TOMANY_TIMES.getValue());
+                    }
+                } else {
+                    //错误次数没有超过3次,如果对了就清空，如果不对就+1
+                    if (PasswordHash.validatePassword(password + adminLoginModel.getSalt(), adminLoginModel.getPassword())) {
+                        //清空次数
+                        wrongtimes = 0;
+                        result.setUid(1);
+                        session.setAttribute("admin", adminLoginModel.getType());
+                    } else {
+                        wrongtimes += 1;
+                        result.setUid(LoginStatus.WRONG.getValue());
+                    }
+                }
+                if (isNeedUpdateState) {
+                    state = System.currentTimeMillis();
+                    sql = "update admin set state = ?, wrongtimes = ? where account = ?";
+                    jdbcTemplate.update(sql, state, wrongtimes, account);
+                } else {
+                    sql = "update admin set  wrongtimes = ? where account = ?";
                     jdbcTemplate.update(sql, wrongtimes, account);
                 }
             }
@@ -243,7 +328,7 @@ public class UserController {
                     return stringModel;
                 }
                 sql = "select * from login where uid =?";
-                LoginModel loginModel = validatePasswordBysql(sql, new String[]{user});
+                LoginModel loginModel = queryLoginModel(sql, new String[]{user});
                 if (loginModel != null && PasswordHash.validatePassword(s1 + loginModel.getSalt(), loginModel.getPassword())) {
                     String sql2 = "update login set password = ? , salt = ? where uid = ?";
                     String salt = createSalt();
@@ -385,7 +470,7 @@ public class UserController {
         });
     }
 
-    private LoginModel validatePasswordBysql(String sql, String[] columns) {
+    private LoginModel queryLoginModel(String sql, String[] columns) {
         LoginModel loginModel;
         try {
             loginModel = jdbcTemplate.queryForObject(sql, columns, (resultSet, i) -> {
@@ -399,6 +484,26 @@ public class UserController {
                 return loginModel1;
             });
             return loginModel;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private AdminLoginModel queryAdminLoginModel(String sql, String[] columns) {
+        AdminLoginModel adminLoginModel;
+        try {
+            adminLoginModel = jdbcTemplate.queryForObject(sql, columns, (resultSet, i) -> {
+                AdminLoginModel admin = new AdminLoginModel();
+                admin.setAccount(resultSet.getString("account"));
+                admin.setPassword(resultSet.getString("password"));
+                admin.setSalt(resultSet.getString("salt"));
+                admin.setState(resultSet.getLong("state"));
+                admin.setWrongtimes(resultSet.getInt("wrongtimes"));
+                admin.setUid(resultSet.getInt("uid"));
+                admin.setType(resultSet.getInt("type"));
+                return admin;
+            });
+            return adminLoginModel;
         } catch (Exception e) {
             return null;
         }
