@@ -76,6 +76,12 @@
         top: 1px;
     }
 
+    div .configpage {
+        width: 333px;
+        height: 37px;
+        margin: 0 auto;
+    }
+
 </style>
 
 <body>
@@ -133,7 +139,19 @@
                                              style="color:#5a5a5a" onclick="configtb()" href="javascript:void(0)"
                             class="tab1"><%=configModel.getTb()==1?"开启":"关闭"%></a></td>
                 </tr>
+
             </table>
+
+            <div class="configpage" style="padding-top: 15px">
+                <form action="http://localhost:9090/controller/admin/configpage" onsubmit="return checkName()">
+                    <input type="number" class="shuru" id="page" name="page" placeholder="页数限制为3-10"
+                           style="width: 200px;height: 36px;float: left"/>
+                    <input type="submit" class="ok" value="设置爬取页数"
+                           style="cursor:pointer; width:130px;height: 36px;
+                           color: white;background: #b20a2c;border: 0;
+                           font-size:medium;float:right;text-align:center">
+                </form>
+            </div>
 
         </div>
 
@@ -197,6 +215,25 @@
                         document.getElementById("config_tb").name = "1";
                         document.getElementById("config_tb").innerText = "关闭";
                     }
+                }
+            }
+        };
+        request.send(data)
+        return false;
+    }
+    function checkName() {
+        var page = document.getElementById("page").value;
+        var request = new XMLHttpRequest();
+        var url = "http://localhost:9090/controller/admin/configpage";
+        var signal = document.getElementById("config_tb").name;
+        request.open("post", url, true);
+        var data = new FormData();
+        data.append("page", page);
+        request.onreadystatechange = function() {
+            if (this.readyState == 4) {
+                var json = JSON.parse(this.responseText);
+                if (json.string == page) {
+                    alert("设置成功")
                 }
             }
         };

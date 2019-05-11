@@ -247,6 +247,19 @@ public class HttpService {
         return null;
     }
 
+    public static InformationModel getInformation(){
+        try {
+            RestTemplate restTemplate=new RestTemplate();
+            StringBuilder url = new StringBuilder("http://localhost:9090/information/get");
+            ResponseEntity<InformationModel> responseEntity = restTemplate.getForEntity(url.toString(), InformationModel.class);
+            InformationModel informationModel = responseEntity.getBody();
+            return informationModel;
+        } catch (Exception e) {
+            System.out.print(e);
+        }
+        return null;
+    }
+
     private static void makeids(List<String> ids, StringBuilder url, int size) {
         for (int i = 0 ; i < size; i++) {
             String id = ids.get(i);

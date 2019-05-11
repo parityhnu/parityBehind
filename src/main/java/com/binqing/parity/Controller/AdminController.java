@@ -164,6 +164,29 @@ public class AdminController {
         return stringModel;
     }
 
+    @RequestMapping("/configpage")
+    public StringModel configPage(@RequestParam String page) {
+        StringModel stringModel = new StringModel();
+        try {
+            int number = Integer.parseInt(page);
+            if (number <= 2) {
+                number = 3;
+            }
+            if (number > 10) {
+                number = 10;
+            }
+            String sql = "update config set page = ? where id = 1";
+            if (jdbcTemplate.update(sql, number) == 1) {
+                stringModel.setString(page);
+            } else {
+                stringModel.setString("-1");
+            }
+            return stringModel;
+        } catch (Exception e) {
+            return stringModel;
+        }
+    }
+
     private List<UserModel> queryUsers(int page) throws SQLException {
         String querySql = "select * from user limit "+(page-1)*20+",20;";
         return getUserModels(querySql);
@@ -220,6 +243,7 @@ public class AdminController {
                 ConfigModel configModel = new ConfigModel();
                 configModel.setJd(resultSet.getInt("jd"));
                 configModel.setTb(resultSet.getInt("tb"));
+                configModel.setPage(resultSet.getInt("page"));
                 return configModel;
             }
         });
