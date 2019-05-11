@@ -90,6 +90,8 @@ public class IPController {
                     .append(configModel.getJd())
                     .append("_")
                     .append(configModel.getTb())
+                    .append("_")
+                    .append(configModel.getPage())
                     .toString());
             AtomicInteger integer = new AtomicInteger(10);
             while(integer.decrementAndGet() > 0) {
@@ -321,6 +323,7 @@ public class IPController {
                 ConfigModel configModel = new ConfigModel();
                 configModel.setJd(resultSet.getInt("jd"));
                 configModel.setTb(resultSet.getInt("tb"));
+                configModel.setPage(resultSet.getInt("page"));
                 return configModel;
             }
         });
