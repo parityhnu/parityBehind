@@ -5,6 +5,7 @@ import com.binqing.parity.Enum.LoginStatus;
 import com.binqing.parity.Model.*;
 import com.binqing.parity.PasswordHash;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.web.bind.annotation.*;
@@ -15,20 +16,28 @@ import javax.servlet.http.HttpSession;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.List;
 
 @RestController
 @RequestMapping("/user")
 public class UserController {
 
     @Autowired
+    StringRedisTemplate stringRedisTemplate;
+
+    private static final String REDIS_URL = "redis_url_login_count";
+
+    @Autowired
     private JdbcTemplate jdbcTemplate;
 
     //
     @GetMapping("/test")
-    public StringModel testall(@RequestParam String user) throws InvalidKeySpecException, NoSuchAlgorithmException {
-        return requestPhone(user);
+    public void testall() throws InvalidKeySpecException, NoSuchAlgorithmException {
+        saveLogin(31);
     }
 //
 //    @GetMapping("/testlogin")
@@ -100,6 +109,7 @@ public class UserController {
                             //清空次数
                             wrongtimes = 0;
                             result = queryUserByAccount(account);
+                            saveLogin(result.getUid());
                             setSession(session, result);
                         } else {
                             //设置次数为1，并且更新state
@@ -116,6 +126,7 @@ public class UserController {
                         //清空次数
                         wrongtimes = 0;
                         result = queryUserByAccount(account);
+                        saveLogin(result.getUid());
                         setSession(session, result);
                     } else {
                         wrongtimes += 1;
@@ -135,6 +146,36 @@ public class UserController {
         } catch (Exception e) {
             result.setUid(LoginStatus.WRONG.getValue());
             return result;
+        }
+    }
+
+    private void saveLogin(int uid) {
+        String key = REDIS_URL + "_" + uid;
+        String time = stringRedisTemplate.opsForValue().get(key);
+        long currentTime = System.currentTimeMillis();
+        //存的都是每天的0点
+        long toSaveTime = currentTime - currentTime % TimeConsts.MILLS_OF_ONE_DAY;
+        //不相同就说明是新的一天,存入redis和数据库
+        if (!String.valueOf(toSaveTime).equals(time)) {
+            stringRedisTemplate.opsForValue().set(key, String.valueOf(toSaveTime));
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String date = format.format(toSaveTime);
+            String sql = "select count from datecount where date = ?";
+            List<Integer> integers = jdbcTemplate.query(sql,new String[]{date}, new RowMapper<Integer>() {
+                @Override
+                public Integer mapRow(ResultSet resultSet, int i) throws SQLException {
+                    return resultSet.getInt(1);
+                }
+            });
+            if (integers == null || integers.isEmpty()) {
+                sql = "insert into datecount(date, count) VALUES (? ,1)";
+                jdbcTemplate.update(sql,date);
+                return;
+            } else {
+                int count = integers.get(0)+1;
+                sql = "update datecount set count = ? where date = ?";
+                jdbcTemplate.update(sql, count, date);
+            }
         }
     }
 
@@ -426,6 +467,7 @@ public class UserController {
             return stringModel;
         }
         try {
+            saveLogin(Integer.parseInt(user));
             id = id.split(":")[1];
         } catch (Exception e) {
             stringModel.setString("null");

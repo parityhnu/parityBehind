@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -67,6 +68,9 @@ public class IPController {
                     qsort = SortType.INIT.getValue();
             }
         }
+
+        //保存记录用作统计
+        saveSearch(name, qsort);
 
         String code = new StringBuilder(name).append("urlurlurlaaaaa").append(qsort).toString();
         String time = stringRedisTemplate.opsForValue().get(code);
@@ -118,6 +122,35 @@ public class IPController {
         return goodsListModel;
     }
 
+    @RequestMapping("/test")
+    public void test() {
+        saveSearch("iphone", 0);
+    }
+
+    private void saveSearch(String keyword, int sort) {
+        long currentTime = System.currentTimeMillis();
+        //存的都是每天的0点
+        long toSaveTime = currentTime - currentTime % TimeConsts.MILLS_OF_ONE_DAY;
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String date = format.format(toSaveTime);
+        String sql = "select count from searchcount where date = ? and keyword = ? and sort = ?";
+        List<Integer> integers = jdbcTemplate.query(sql,new String[]{date, keyword, String.valueOf(sort)}, new RowMapper<Integer>() {
+            @Override
+            public Integer mapRow(ResultSet resultSet, int i) throws SQLException {
+                return resultSet.getInt(1);
+            }
+        });
+        if (integers == null || integers.isEmpty()) {
+            sql = "insert into searchcount(date, keyword, sort, count) VALUES (?,?,?,1)";
+            jdbcTemplate.update(sql,date,keyword,sort);
+            return;
+        } else {
+            int count = integers.get(0)+1;
+            sql = "update searchcount set count = ? where date = ? and keyword = ? and sort = ?";
+            jdbcTemplate.update(sql, count, date, keyword, sort);
+        }
+    }
+
     @GetMapping("/getparitys")
     public List<ParityModel> getparitys(@RequestParam List<String> ids) throws InterruptedException {
         if (ids == null || ids.isEmpty()) {
@@ -141,6 +174,11 @@ public class IPController {
     @GetMapping("getFavorite")
     public List<ParityModel> getFavorite(@RequestParam String user) {
         if (user == null || "".equals(user)) {
+            return null;
+        }
+        try {
+            saveLogin(Integer.parseInt(user));
+        } catch (Exception e){
             return null;
         }
         List<ParityModel> result = new ArrayList<>();
@@ -171,6 +209,36 @@ public class IPController {
         return result;
     }
 
+
+    private void saveLogin(int uid) {
+        String key = REDIS_URL + "_" + uid;
+        String time = stringRedisTemplate.opsForValue().get(key);
+        long currentTime = System.currentTimeMillis();
+        //存的都是每天的0点
+        long toSaveTime = currentTime - currentTime % TimeConsts.MILLS_OF_ONE_DAY;
+        //不相同就说明是新的一天,存入redis和数据库
+        if (!String.valueOf(toSaveTime).equals(time)) {
+            stringRedisTemplate.opsForValue().set(key, String.valueOf(toSaveTime));
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String date = format.format(toSaveTime);
+            String sql = "select count from datecount where date = ?";
+            List<Integer> integers = jdbcTemplate.query(sql,new String[]{date}, new RowMapper<Integer>() {
+                @Override
+                public Integer mapRow(ResultSet resultSet, int i) throws SQLException {
+                    return resultSet.getInt(1);
+                }
+            });
+            if (integers == null || integers.isEmpty()) {
+                sql = "insert into datecount(date, count) VALUES (? ,1)";
+                jdbcTemplate.update(sql,date);
+                return;
+            } else {
+                int count = integers.get(0)+1;
+                sql = "update datecount set count = ? where date = ?";
+                jdbcTemplate.update(sql, count, date);
+            }
+        }
+    }
 
     private  <T>List<T> findList(String keyword, int page, int sort, Class<T> clazz) {
         return findList(keyword, page, sort, 0, 0, clazz);
