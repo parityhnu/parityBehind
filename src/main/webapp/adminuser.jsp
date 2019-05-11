@@ -200,7 +200,7 @@
                         }
                     } else {
                         for (int i = 1; i<=maxPage; i ++) { %>
-                    <a class="nav<%=i%>" href=<%=url_noindex + "&index=" + i%>>i</a>
+                    <a class="nav<%=i%>" href=<%=url_noindex + "&index=" + i%>><%=i%></a>
                     <%
                             }
                         }
