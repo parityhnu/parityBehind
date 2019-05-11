@@ -102,7 +102,7 @@
     if (userModels == null) {
         return;
     }
-    String url_noindex = "http://localhost:9090/admin/admin";
+    String url_noindex = "/admin/admin";
 %>
 <div class="all">
     <div class="content_guide">
@@ -143,7 +143,7 @@
                             if ("0" .equals(String.valueOf(session.getAttribute("admin")))) {
                         %>
                         <a style="color:#5a5a5a"
-                           href="http://localhost:9090/admin/login" class="tab1">添加管理员</a>
+                           href="/admin/login" class="tab1">添加管理员</a>
                         <%
                             }
                         %>
@@ -156,7 +156,7 @@
                     <td bgcolor="#ffffff"><%=userModel.getUid()%></td>
                     <td bgcolor="#ffffff"><%=userModel.getAccount()%></td>
                     <td bgcolor="#ffffff"><a style="color:#5a5a5a"
-                                             href="http://localhost:9090/admin/admindetail<%="?user="+userModel.getUid()%>" class="tab1">查看详情</a></td>
+                                             href="/admin/admindetail<%="?user="+userModel.getUid()%>" class="tab1">查看详情</a></td>
                 </tr>
                 <%
                     }
