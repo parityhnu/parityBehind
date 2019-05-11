@@ -143,7 +143,7 @@
             </table>
 
             <div class="configpage" style="padding-top: 15px">
-                <form action="http://localhost:9090/controller/admin/configpage" onsubmit="return checkName()">
+                <form action="/controller/admin/configpage" onsubmit="return checkName()">
                     <input type="number" class="shuru" id="page" name="page" placeholder="页数限制为3-10"
                            style="width: 200px;height: 36px;float: left"/>
                     <input type="submit" class="ok" value="设置爬取页数"
@@ -172,7 +172,7 @@
 
     function configjd() {
         var request = new XMLHttpRequest();
-        var url = "http://localhost:9090/controller/admin/configjd";
+        var url = "/controller/admin/configjd";
         var signal = document.getElementById("config_jd").name;
         console.log(signal);
         request.open("post", url, true);
@@ -199,7 +199,7 @@
 
     function configtb() {
         var request = new XMLHttpRequest();
-        var url = "http://localhost:9090/controller/admin/configtb";
+        var url = "/controller/admin/configtb";
         var signal = document.getElementById("config_tb").name;
         request.open("post", url, true);
         var data = new FormData();
@@ -224,7 +224,7 @@
     function checkName() {
         var page = document.getElementById("page").value;
         var request = new XMLHttpRequest();
-        var url = "http://localhost:9090/controller/admin/configpage";
+        var url = "/controller/admin/configpage";
         var signal = document.getElementById("config_tb").name;
         request.open("post", url, true);
         var data = new FormData();

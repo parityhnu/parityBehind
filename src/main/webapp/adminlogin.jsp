@@ -224,7 +224,7 @@
     function submit(callback) {
         if (passwd.value == con_pass.value) {
             var request = new XMLHttpRequest();
-            var url = "http://localhost:9090/user/admin/register";
+            var url = "/user/admin/register";
             request.open("post", url, true);
             var data = new FormData();
             data.append("account", user.value);
@@ -292,13 +292,14 @@
         if (onoff) {
             var hit = document.getElementById("hint").getElementsByTagName("p")[0];
             var request = new XMLHttpRequest();
-            var url = "http://localhost:9090/user/admin/login";
+            var url = "/user/admin/login";
             request.open("post", url, true);
             var data = new FormData();
             data.append("account", user.value);
             data.append("password", passwd.value);
             request.onreadystatechange = function() {
                 if (this.readyState == 4) {
+                    console.log(this.responseText)
                     if (this.responseText == false)
                         hit.innerHTML = "登录失败";
                 }

@@ -171,7 +171,7 @@
         // 0说明当前的状态是被封禁，所以要解封
         var ban = document.getElementById("user_state").name;
         if ("0" == ban) {
-            var url = "http://localhost:9090/controller/admin/releaseuser";
+            var url = "/admin/releaseuser";
             var account = "<%=userModel.getAccount()%>";
             request.open("post", url, true);
             var data = new FormData();
@@ -187,7 +187,7 @@
             };
             request.send(data)
         } else {
-            var url = "http://localhost:9090/controller/admin/banuser";
+            var url = "/controller/admin/banuser";
             var account = "<%=userModel.getAccount()%>";
             request.open("post", url, true);
             var data = new FormData();

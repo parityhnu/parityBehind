@@ -102,7 +102,7 @@
     if (userModels == null) {
         return;
     }
-    String url_noindex = "http://localhost:9090/admin/admin";
+    String url_noindex = "/admin/admin";
 %>
 <div class="all">
     <div class="content_guide">
@@ -151,7 +151,7 @@
                             <td bgcolor="#ffffff"><%=userModel.getUname()%></td>
                             <td bgcolor="#ffffff"><%=userModel.getPhone()%></td>
                             <td bgcolor="#ffffff"><a style="color:#5a5a5a"
-                                                     href="http://localhost:9090/admin/userdetail<%="?user="+userModel.getUid()%>" class="tab1">查看详情</a></td>
+                                                     href="/admin/userdetail<%="?user="+userModel.getUid()%>" class="tab1">查看详情</a></td>
                         </tr>
                     <%
                         }

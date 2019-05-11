@@ -67,10 +67,10 @@ public class InformationController {
         }
         informationModel.setSearchWeek(map);
 
-        informationModel.setKeywordAll(queryKeywordCount(current, lastWeek));
-        informationModel.setKeywordWeek(queryWeekKeywordCount());
-        informationModel.setSortAll(querySortCount(current, lastWeek));
-        informationModel.setSortWeek(queryWeekSortCount());
+        informationModel.setKeywordAll(queryKeywordCount());
+        informationModel.setKeywordWeek(queryWeekKeywordCount(current, lastWeek));
+        informationModel.setSortAll(querySortCount());
+        informationModel.setSortWeek(queryWeekSortCount(current, lastWeek));
         informationModel.setFavoriteCount(queryFavoriteUserCount());
         return informationModel;
 
@@ -86,23 +86,23 @@ public class InformationController {
         return getDate_CountModels(current, lastWeek, sql);
     }
 
-    private List<String_CountModel> queryWeekKeywordCount() {
-        String sql = "select keyword,sum(count) as count from searchcount GROUP BY keyword;";
+    private List<String_CountModel> queryKeywordCount() {
+        String sql = "select keyword,sum(count) as count from searchcount GROUP BY keyword ORDER BY count DESC LIMIT 10;";
         return getString_CountModels(sql, true);
     }
 
-    private List<String_CountModel> queryWeekSortCount() {
-        String sql = "select sort, sum(count) as count from searchcount GROUP BY sort;";
+    private List<String_CountModel> querySortCount() {
+        String sql = "select sort, sum(count) as count from searchcount GROUP BY sort ORDER BY count DESC LIMIT 10;";
         return getString_CountModels(sql, false);
     }
 
-    private List<String_CountModel> queryKeywordCount(String current, String lastWeek) {
-        String sql = "select keyword,sum(count) as count from searchcount where date BETWEEN ? and ? GROUP BY keyword;";
+    private List<String_CountModel> queryWeekKeywordCount(String current, String lastWeek) {
+        String sql = "select keyword,sum(count) as count from searchcount where date BETWEEN ? and ? GROUP BY keyword ORDER BY count DESC LIMIT 10;";
         return getString_CountModels(current, lastWeek, sql, true);
     }
 
-    private List<String_CountModel> querySortCount(String current, String lastWeek) {
-        String sql = "select sort, sum(count) as count from searchcount where date BETWEEN ? and ? GROUP BY sort;";
+    private List<String_CountModel> queryWeekSortCount(String current, String lastWeek) {
+        String sql = "select sort, sum(count) as count from searchcount where date BETWEEN ? and ? GROUP BY sort ORDER BY count DESC LIMIT 10;";
         return getString_CountModels(current, lastWeek, sql, false);
     }
 
